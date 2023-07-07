@@ -1,0 +1,6 @@
+ECLIPSE VERT.X 5 MIGRATION GUIDE
+
+This guide describes the updates in Eclipse Vert.x {v5} release. Use the information to upgrade your {VertX} {v4x} applications to {VertX} {v5}. It provides information about the new, deprecated and unsupported features in this release.
+
+Depending on the modules used in your application, you can read the relevant section to know more about the changes in {VertX} {v5}.
+

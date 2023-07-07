@@ -1,0 +1,31 @@
+name: asciidoc
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron:  '0 4 * * *'
+jobs:
+  Test:
+    name: Build asciidoc
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        jdk: [8]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install JDK
+        uses: joschi/setup-jdk@v2
+        with:
+          java-version: ${{ matrix.jdk }}
+      - name: Render asciidoc
+        run: mvn generate-resources
+      - name: Publish to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: target/docs/vertx-5-migration-guide
+          CLEAN: true
