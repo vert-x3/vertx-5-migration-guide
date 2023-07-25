@@ -4,3 +4,21 @@ This guide describes the updates in Eclipse Vert.x {v5} release. Use the informa
 
 Depending on the modules used in your application, you can read the relevant section to know more about the changes in {VertX} {v5}.
 
+= Changes in Web Validation
+
+Vert.x Web Validation is now based on the new https://vertx.io/docs/vertx-json-schema/java/[JSON Schema API]. Because
+of this the _create_ method of _ValidationHandlerBuilder_ now requires a _SchemaRepository_ instead of a _SchemaParser_.
+
+----
+SchemaRepository schemaRepo = SchemaRepository.create(new JsonSchemaOptions().setDraft(DRAFT7));
+
+ValidationHandlerBuilder.create(schemaRepo);
+----
+
+To improve security, the new _SchemaRepository_ is *not* automatically loading external references. In case your schema
+contains an external references you must provide and dereference them upfront.
+
+----
+JsonSchema externalSchema = JsonSchema.of(new JsonObject......);
+schemaRepo.dereference("http://example.org/my_external_schema", externalSchema);
+----
