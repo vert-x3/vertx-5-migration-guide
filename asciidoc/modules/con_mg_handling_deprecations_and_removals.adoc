@@ -1,0 +1,12 @@
+[id="handling_deprecations_and_removals_{context}"]
+= Handling deprecations and removals
+
+Some features and functions have been deprecated or removed in {VertX} {v5}. Before you migrate your applications to {VertX} {v5}, check for deprecations and removals.
+
+* Some APIs were deprecated in an {VertX} {v4x} release and new equivalent APIs were provided in that release.
+
+* The deprecated APIs have been removed in {VertX} {v5}.
+
+If your application uses a deprecated API, you should update your application to use the new API. This helps in migrating applications to the latest version of the product.
+
+The Java compiler generates warnings when deprecated APIs are used. You can use the compiler to check for deprecated methods while migrating applications to {VertX} {v5}.

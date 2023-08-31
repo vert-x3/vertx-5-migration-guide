@@ -4,3 +4,6 @@ This guide describes the updates in Eclipse Vert.x {v5} release. Use the informa
 
 Depending on the modules used in your application, you can read the relevant section to know more about the changes in {VertX} {v5}.
 
+include::modules/con_mg-about-vertx.adoc[leveloffset=+1]
+
+include::chapters/assembly_mg_what-is-new-and-different-in-vertx-5.adoc[leveloffset=+1]
