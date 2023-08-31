@@ -1,0 +1,55 @@
+[id="cli_framework_deprecation_{context}"]
+= CLI framework deprecation
+
+The CLI framework is deprecated in {VertX} {v5}.
+This includes the `io.vertx.core.Launcher` class, which is based on it.
+
+If your application is a command-line tool or needs one, checkout alternatives like https://picocli.info/[Picocli].
+In fact, in various aspects, Picocli is more flexible and more powerful than the Vert.x CLI framework.
+
+== Vert.x Legacy CLI
+
+If, while evaluating alternatives, you need to preserve the CLI framework functionality, you may do so by adding this dependency to your project (Maven):
+
+[source,xml]
+----
+<dependency>
+  <groupId>io.vertx</groupId>
+  <artifactId>vertx-launcher-legacy-cli</artifactId>
+  <version>5.0.0</version>
+</dependency>
+----
+
+This new project contains the legacy CLI framework, including the `io.vertx.core.Launcher` class.
+
+Beware it is not guaranteed that backward compatibility can be maintained for the whole {VertX} {v5} lifetime.
+
+== Vert.x Application Launcher
+
+In {VertX} {v5}, a new module, the https://vertx.io/docs/vertx-application-launcher/java/[Vert.x Application Launcher] replaces the {VertX} {v4x} `io.vertx.core.Launcher` class.
+
+First, you must add it to your project's dependencies (Maven):
+
+[source,xml]
+----
+<dependency>
+  <groupId>io.vertx</groupId>
+  <artifactId>vertx-launcher-application</artifactId>
+  <version>5.0.0</version>
+</dependency>
+----
+
+To start your application, use `io.vertx.launcher.application.VertxApplication` as the main class.
+
+[source,shell]
+----
+# Assuming the command is executed on a Unix-like system which has the classpath configured in the CLASSPATH environment variable.
+java -cp $CLASSPATH io.vertx.launcher.application.VertxApplication my.app.MainVerticle
+----
+
+If your application is packaged as an executable JAR, having the `Main-Class` attribute set to `io.vertx.launcher.application.VertxApplication` in the `META-INF/MANIFEST.MF` file, the command can be simplified.
+
+[source,shell]
+----
+java -jar myapp.jar my.app.MainVerticle
+----

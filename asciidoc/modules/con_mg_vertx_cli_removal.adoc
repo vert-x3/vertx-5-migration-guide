@@ -1,0 +1,13 @@
+[id="vertx_cli_removal_{context}"]
+= `vertx` command-line tool removal
+
+The `vertx` command-line tool has been removed in {VertX} {v5}.
+
+We want to focus on the use case of the typical Vert.x application: compiled and optionally packaged as an executable uber-jar.
+
+You can do this with Maven and the https://reactiverse.io/vertx-maven-plugin/[Vert.x Maven Plugin].
+The plugin can create a new Maven project in your repository or update an existing one.
+
+In addition to packaging the application as an executable uber-jar, it can also start your application in development mode (redeploying the main verticle when file changes are detected).
+
+If you're a Gradle user, the https://github.com/jponge/vertx-gradle-plugin[Vert.x Gradle Plugin] provides similar features.
