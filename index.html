@@ -5,7 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.1">
-<title>Untitled</title>
+<title>About Vert.x</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -516,8 +516,19 @@ table.CodeRay td.code>pre{padding:0}
 .CodeRay .head .head{color:#f4f}
 </style>
 </head>
-<body class="book">
+<body class="book toc2 toc-left">
 <div id="header">
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#about-vertx_{context}">About Vert.x</a></li>
+<li><a href="#what-is-new-and-different-in-vertx-5_{context}">What&#8217;s changed in Vert.x 5</a>
+<ul class="sectlevel2">
+<li><a href="#handling_deprecations_and_removals_what-is-new-and-different-in-vertx-5">Handling deprecations and removals</a></li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 <div id="content">
 <div id="preamble">
@@ -533,10 +544,51 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="about-vertx_{context}">About Vert.x</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Vert.x is a toolkit used for creating reactive, non-blocking, and asynchronous applications that run on Java Virtual Machine. (JVM). It contains several components that help you create reactive applications. It is designed to be cloud-native.</p>
+</div>
+<div class="paragraph">
+<p>Since Vert.x supports asynchronous applications it can be used to create applications with high volume of messages, large event processing, HTTP interactions, and so on.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="what-is-new-and-different-in-vertx-5_{context}">What&#8217;s changed in Vert.x 5</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This section explains the fundamental differences between Vert.x 5 and 4.x releases.</p>
+</div>
+<div class="sect2">
+<h3 id="handling_deprecations_and_removals_what-is-new-and-different-in-vertx-5">Handling deprecations and removals</h3>
+<div class="paragraph">
+<p>Some features and functions have been deprecated or removed in Vert.x 5. Before you migrate your applications to Vert.x 5, check for deprecations and removals.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some APIs were deprecated in an Vert.x 4.x release and new equivalent APIs were provided in that release.</p>
+</li>
+<li>
+<p>The deprecated APIs have been removed in Vert.x 5.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>If your application uses a deprecated API, you should update your application to use the new API. This helps in migrating applications to the latest version of the product.</p>
+</div>
+<div class="paragraph">
+<p>The Java compiler generates warnings when deprecated APIs are used. You can use the compiler to check for deprecated methods while migrating applications to Vert.x 5.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2023-08-31 04:07:09 UTC
+Last updated 2023-08-31 14:24:26 UTC
 </div>
 </div>
 </body>
