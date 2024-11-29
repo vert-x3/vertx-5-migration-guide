@@ -524,6 +524,8 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel1">
 <li><a href="#_about_vert_x">About Vert.x</a></li>
 <li><a href="#_what_s_changed_in_vert_x_5">What&#8217;s changed in Vert.x 5</a></li>
+<li><a href="#_embracing_the_future_model">Embracing the future model</a></li>
+<li><a href="#_components_sunsets_and_removals">Components sunsets and removals</a></li>
 <li><a href="#_vertx_command_line_tool_removal">vertx command-line tool removal</a></li>
 <li><a href="#_cli_framework_deprecation">CLI framework deprecation</a>
 <ul class="sectlevel2">
@@ -563,6 +565,131 @@ table.CodeRay td.code>pre{padding:0}
 <div class="paragraph">
 <p>This section explains the fundamental differences between Vert.x 5 and 4.x releases.</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_embracing_the_future_model">Embracing the future model</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Vert.x 4 extended the 3.x callback asynchronous model to a future/callback hybrid model, to facilitate migration from Vert.x 3.</p>
+</div>
+<div class="paragraph">
+<p>Every callback method has a matching future method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">HttpClient</span> {
+
+   <span class="comment">// Future version</span>
+   <span class="predefined-type">Future</span>&lt;HttpClientRequest&gt; request(RequestOptions request);
+
+   <span class="comment">// Callback version</span>
+   <span class="type">void</span> request(RequestOptions request, <span class="predefined-type">Handler</span>&lt;AsyncResult&lt;HttpClientRequest&gt;&gt; callback);
+   ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vert.x 5 only retains the future model and thus the callback model is gone, instead you get:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">HttpClient</span> {
+
+   <span class="comment">// Future version</span>
+   <span class="predefined-type">Future</span>&lt;HttpClientRequest&gt; request(RequestOptions request);
+   ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Callback methods Vert.x 4.x are not deprecated methods, however after the release of Vert.x 5, the callback
+methods shall be deprecated in order to facilitate the migration to Vert.x 5.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_components_sunsets_and_removals">Components sunsets and removals</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A few components are sunsetting in 5, that means they are still supported for the lifetime of the 5.x series,
+but we don’t encourage using them anymore since we provide replacements for them. Such components are scheduled
+to go away in the next major release (Vert.x 6).</p>
+</div>
+<div class="paragraph">
+<p>Here is the list of components sunsetting in 5:</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-left valign-top">Replacement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">gRPC Netty</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x gRPC client and server</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">JDBC API</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SQL client API implementation for JDBC</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Service Discovery</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x Service Resolver</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">RxJava 2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mutiny or RxJava 3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OpenTracing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OpenTelemetry</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x Unit</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x JUnit 5</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Here is the list of components removed in 5, that were sunset in the 4.x series.</p>
+</div>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-left valign-top">Replacement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x Sync</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x virtual threads</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Service Factories</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">None</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maven Service Factory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">None</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">HTTP Service Factory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">None</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
@@ -682,7 +809,7 @@ java -cp $CLASSPATH io.vertx.launcher.application.VertxApplication my.app.MainVe
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-11-29 14:12:45 UTC
+Last updated 2024-11-29 15:05:06 UTC
 </div>
 </div>
 </body>
