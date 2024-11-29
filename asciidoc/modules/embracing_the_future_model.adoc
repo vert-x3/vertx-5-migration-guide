@@ -1,0 +1,33 @@
+= Embracing the future model
+
+{VertX} 4 extended the 3.x callback asynchronous model to a future/callback hybrid model, to facilitate migration from Vert.x 3.
+
+Every callback method has a matching future method:
+
+[source,java]
+----
+public interface HttpClient {
+
+   // Future version
+   Future<HttpClientRequest> request(RequestOptions request);
+
+   // Callback version
+   void request(RequestOptions request, Handler<AsyncResult<HttpClientRequest>> callback);
+   ...
+}
+----
+
+{VertX} {v5} only retains the future model and thus the callback model is gone, instead you get:
+
+[source,java]
+----
+public interface HttpClient {
+
+   // Future version
+   Future<HttpClientRequest> request(RequestOptions request);
+   ...
+}
+----
+
+Callback methods {VertX} {v4x} are not deprecated methods, however after the release of {VertX} {v5}, the callback
+methods shall be deprecated in order to facilitate the migration to {VertX} {v5}.

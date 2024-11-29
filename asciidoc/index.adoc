@@ -1,4 +1,8 @@
 = Migrate from Vert.x 4 to 5
+:VertX: Vert.x
+:v5: 5
+:v5x: 5.x
+:v4x: 4.x
 
 This guide describes the updates in Eclipse Vert.x {v5} release. Use the information to upgrade your {VertX} {v4x} applications to {VertX} {v5}. It provides information about the new, deprecated and unsupported features in this release.
 
@@ -11,6 +15,10 @@ include::modules/about-vertx.adoc[leveloffset=+1]
 :context: what-is-new-and-different-in-vertx-5
 
 This section explains the fundamental differences between {VertX} {v5} and {v4x} releases.
+
+include::modules/embracing_the_future_model.adoc[leveloffset=+1]
+
+include::modules/component_sunsets_and_removals.adoc[leveloffset=+1]
 
 include::modules/vertx_cli_removal.adoc[leveloffset=+1]
 

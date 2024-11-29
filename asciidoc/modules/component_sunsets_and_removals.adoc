@@ -1,0 +1,47 @@
+= Components sunsets and removals
+
+A few components are sunsetting in {v5}, that means they are still supported for the lifetime of the {v5x} series,
+but we don’t encourage using them anymore since we provide replacements for them. Such components are scheduled
+to go away in the next major release ({VertX} 6).
+
+Here is the list of components sunsetting in {v5}:
+
+|===
+|Component |Replacement
+
+|gRPC Netty
+|Vert.x gRPC client and server
+
+|JDBC API
+|SQL client API implementation for JDBC
+
+|Service Discovery
+|Vert.x Service Resolver
+
+|RxJava 2
+|Mutiny or RxJava 3
+
+|OpenTracing
+|OpenTelemetry
+
+|Vert.x Unit
+|Vert.x JUnit 5
+|===
+
+Here is the list of components removed in {v5}, that were sunset in the {v4x} series.
+
+|===
+|Component |Replacement
+
+|Vert.x Sync
+|Vert.x virtual threads
+
+|Service Factories
+|None
+
+|Maven Service Factory
+|None
+
+|HTTP Service Factory
+|None
+|===
