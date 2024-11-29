@@ -1,4 +1,3 @@
-[id="cli_framework_deprecation_{context}"]
 = CLI framework deprecation
 
 The CLI framework is deprecated in {VertX} {v5}.

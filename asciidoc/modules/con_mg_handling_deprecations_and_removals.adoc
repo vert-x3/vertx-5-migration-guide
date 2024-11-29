@@ -1,4 +1,3 @@
-[id="handling_deprecations_and_removals_{context}"]
 = Handling deprecations and removals
 
 Some features and functions have been deprecated or removed in {VertX} {v5}. Before you migrate your applications to {VertX} {v5}, check for deprecations and removals.

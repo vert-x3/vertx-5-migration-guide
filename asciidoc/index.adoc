@@ -6,4 +6,14 @@ Depending on the modules used in your application, you can read the relevant sec
 
 include::modules/con_mg-about-vertx.adoc[leveloffset=+1]
 
-include::chapters/assembly_mg_what-is-new-and-different-in-vertx-5.adoc[leveloffset=+1]
+== What's changed in {VertX} {v5}
+
+:context: what-is-new-and-different-in-vertx-5
+
+This section explains the fundamental differences between {VertX} {v5} and {v4x} releases.
+
+include::modules/con_mg_vertx_cli_removal.adoc[leveloffset=+1]
+
+include::modules/con_mg_cli_framework_deprecation.adoc[leveloffset=+1]
+
+include::modules/con_mg_handling_deprecations_and_removals.adoc[leveloffset=+1]

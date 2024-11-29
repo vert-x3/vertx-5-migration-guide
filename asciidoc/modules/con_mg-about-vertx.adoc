@@ -1,4 +1,3 @@
-[id='about-vertx_{context}']
 = About {VertX}
 
 {VertX} is a toolkit used for creating reactive, non-blocking, and asynchronous applications that run on Java Virtual Machine. (JVM). It contains several components that help you create reactive applications. It is designed to be cloud-native.
