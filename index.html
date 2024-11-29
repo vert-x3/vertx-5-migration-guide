@@ -524,8 +524,9 @@ table.CodeRay td.code>pre{padding:0}
 <ul class="sectlevel1">
 <li><a href="#_about_vert_x">About Vert.x</a></li>
 <li><a href="#_what_s_changed_in_vert_x_5">What&#8217;s changed in Vert.x 5</a></li>
-<li><a href="#_embracing_the_future_model">Embracing the future model</a></li>
+<li><a href="#_handling_deprecations_and_removals">Handling deprecations and removals</a></li>
 <li><a href="#_components_sunsets_and_removals">Components sunsets and removals</a></li>
+<li><a href="#_embracing_the_future_model">Embracing the future model</a></li>
 <li><a href="#_vertx_command_line_tool_removal">vertx command-line tool removal</a></li>
 <li><a href="#_cli_framework_deprecation">CLI framework deprecation</a>
 <ul class="sectlevel2">
@@ -533,7 +534,6 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#_vert_x_application_launcher">Vert.x Application Launcher</a></li>
 </ul>
 </li>
-<li><a href="#_handling_deprecations_and_removals">Handling deprecations and removals</a></li>
 </ul>
 </div>
 </div>
@@ -568,43 +568,26 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect1">
-<h2 id="_embracing_the_future_model">Embracing the future model</h2>
+<h2 id="_handling_deprecations_and_removals">Handling deprecations and removals</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Vert.x 4 extended the 3.x callback asynchronous model to a future/callback hybrid model, to facilitate migration from Vert.x 3.</p>
+<p>Some features and functions have been deprecated or removed in Vert.x 5. Before you migrate your applications to Vert.x 5, check for deprecations and removals.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Some APIs were deprecated in an Vert.x 4.x release and new equivalent APIs were provided in that release.</p>
+</li>
+<li>
+<p>The deprecated APIs have been removed in Vert.x 5.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>Every callback method has a matching future method:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">HttpClient</span> {
-
-   <span class="comment">// Future version</span>
-   <span class="predefined-type">Future</span>&lt;HttpClientRequest&gt; request(RequestOptions request);
-
-   <span class="comment">// Callback version</span>
-   <span class="type">void</span> request(RequestOptions request, <span class="predefined-type">Handler</span>&lt;AsyncResult&lt;HttpClientRequest&gt;&gt; callback);
-   ...
-}</code></pre>
-</div>
+<p>If your application uses a deprecated API, you should update your application to use the new API. This helps in migrating applications to the latest version of the product.</p>
 </div>
 <div class="paragraph">
-<p>Vert.x 5 only retains the future model and thus the callback model is gone, instead you get:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">HttpClient</span> {
-
-   <span class="comment">// Future version</span>
-   <span class="predefined-type">Future</span>&lt;HttpClientRequest&gt; request(RequestOptions request);
-   ...
-}</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Callback methods Vert.x 4.x are not deprecated methods, however after the release of Vert.x 5, the callback
-methods shall be deprecated in order to facilitate the migration to Vert.x 5.</p>
+<p>The Java compiler generates warnings when deprecated APIs are used. You can use the compiler to check for deprecated methods while migrating applications to Vert.x 5.</p>
 </div>
 </div>
 </div>
@@ -690,6 +673,47 @@ to go away in the next major release (Vert.x 6).</p>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_embracing_the_future_model">Embracing the future model</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Vert.x 4 extended the 3.x callback asynchronous model to a future/callback hybrid model, to facilitate migration from Vert.x 3.</p>
+</div>
+<div class="paragraph">
+<p>Every callback method has a matching future method:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">HttpClient</span> {
+
+   <span class="comment">// Future version</span>
+   <span class="predefined-type">Future</span>&lt;HttpClientRequest&gt; request(RequestOptions request);
+
+   <span class="comment">// Callback version</span>
+   <span class="type">void</span> request(RequestOptions request, <span class="predefined-type">Handler</span>&lt;AsyncResult&lt;HttpClientRequest&gt;&gt; callback);
+   ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Vert.x 5 only retains the future model and thus the callback model is gone, instead you get:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">interface</span> <span class="class">HttpClient</span> {
+
+   <span class="comment">// Future version</span>
+   <span class="predefined-type">Future</span>&lt;HttpClientRequest&gt; request(RequestOptions request);
+   ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Callback methods Vert.x 4.x are not deprecated methods, however after the release of Vert.x 5, the callback
+methods shall be deprecated in order to facilitate the migration to Vert.x 5.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -782,34 +806,10 @@ java -cp $CLASSPATH io.vertx.launcher.application.VertxApplication my.app.MainVe
 </div>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_handling_deprecations_and_removals">Handling deprecations and removals</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Some features and functions have been deprecated or removed in Vert.x 5. Before you migrate your applications to Vert.x 5, check for deprecations and removals.</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Some APIs were deprecated in an Vert.x 4.x release and new equivalent APIs were provided in that release.</p>
-</li>
-<li>
-<p>The deprecated APIs have been removed in Vert.x 5.</p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p>If your application uses a deprecated API, you should update your application to use the new API. This helps in migrating applications to the latest version of the product.</p>
-</div>
-<div class="paragraph">
-<p>The Java compiler generates warnings when deprecated APIs are used. You can use the compiler to check for deprecated methods while migrating applications to Vert.x 5.</p>
-</div>
-</div>
-</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-11-29 15:05:06 UTC
+Last updated 2024-11-29 15:18:58 UTC
 </div>
 </div>
 </body>
