@@ -522,14 +522,16 @@ table.CodeRay td.code>pre{padding:0}
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
-<li><a href="#about-vertx_{context}">About Vert.x</a></li>
-<li><a href="#what-is-new-and-different-in-vertx-5_{context}">What&#8217;s changed in Vert.x 5</a>
+<li><a href="#_about_vert_x">About Vert.x</a></li>
+<li><a href="#_what_s_changed_in_vert_x_5">What&#8217;s changed in Vert.x 5</a></li>
+<li><a href="#_vertx_command_line_tool_removal">vertx command-line tool removal</a></li>
+<li><a href="#_cli_framework_deprecation">CLI framework deprecation</a>
 <ul class="sectlevel2">
-<li><a href="#vertx_cli_removal_what-is-new-and-different-in-vertx-5"><code>vertx</code> command-line tool removal</a></li>
-<li><a href="#cli_framework_deprecation_what-is-new-and-different-in-vertx-5">CLI framework deprecation</a></li>
-<li><a href="#handling_deprecations_and_removals_what-is-new-and-different-in-vertx-5">Handling deprecations and removals</a></li>
+<li><a href="#_vert_x_legacy_cli">Vert.x Legacy CLI</a></li>
+<li><a href="#_vert_x_application_launcher">Vert.x Application Launcher</a></li>
 </ul>
 </li>
+<li><a href="#_handling_deprecations_and_removals">Handling deprecations and removals</a></li>
 </ul>
 </div>
 </div>
@@ -545,7 +547,7 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect1">
-<h2 id="about-vertx_{context}">About Vert.x</h2>
+<h2 id="_about_vert_x">About Vert.x</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Vert.x is a toolkit used for creating reactive, non-blocking, and asynchronous applications that run on Java Virtual Machine. (JVM). It contains several components that help you create reactive applications. It is designed to be cloud-native.</p>
@@ -556,13 +558,16 @@ table.CodeRay td.code>pre{padding:0}
 </div>
 </div>
 <div class="sect1">
-<h2 id="what-is-new-and-different-in-vertx-5_{context}">What&#8217;s changed in Vert.x 5</h2>
+<h2 id="_what_s_changed_in_vert_x_5">What&#8217;s changed in Vert.x 5</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>This section explains the fundamental differences between Vert.x 5 and 4.x releases.</p>
 </div>
-<div class="sect2">
-<h3 id="vertx_cli_removal_what-is-new-and-different-in-vertx-5"><code>vertx</code> command-line tool removal</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vertx_command_line_tool_removal">vertx command-line tool removal</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The <code>vertx</code> command-line tool has been removed in Vert.x 5.</p>
 </div>
@@ -580,8 +585,10 @@ The plugin can create a new Maven project in your repository or update an existi
 <p>If you&#8217;re a Gradle user, the <a href="https://github.com/jponge/vertx-gradle-plugin">Vert.x Gradle Plugin</a> provides similar features.</p>
 </div>
 </div>
-<div class="sect2">
-<h3 id="cli_framework_deprecation_what-is-new-and-different-in-vertx-5">CLI framework deprecation</h3>
+</div>
+<div class="sect1">
+<h2 id="_cli_framework_deprecation">CLI framework deprecation</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The CLI framework is deprecated in Vert.x 5.
 This includes the <code>io.vertx.core.Launcher</code> class, which is based on it.</p>
@@ -590,8 +597,8 @@ This includes the <code>io.vertx.core.Launcher</code> class, which is based on i
 <p>If your application is a command-line tool or needs one, checkout alternatives like <a href="https://picocli.info/">Picocli</a>.
 In fact, in various aspects, Picocli is more flexible and more powerful than the Vert.x CLI framework.</p>
 </div>
-<div class="sect3">
-<h4 id="_vert_x_legacy_cli">Vert.x Legacy CLI</h4>
+<div class="sect2">
+<h3 id="_vert_x_legacy_cli">Vert.x Legacy CLI</h3>
 <div class="paragraph">
 <p>If, while evaluating alternatives, you need to preserve the CLI framework functionality, you may do so by adding this dependency to your project (Maven):</p>
 </div>
@@ -611,8 +618,8 @@ In fact, in various aspects, Picocli is more flexible and more powerful than the
 <p>Beware it is not guaranteed that backward compatibility can be maintained for the whole Vert.x 5 lifetime.</p>
 </div>
 </div>
-<div class="sect3">
-<h4 id="_vert_x_application_launcher">Vert.x Application Launcher</h4>
+<div class="sect2">
+<h3 id="_vert_x_application_launcher">Vert.x Application Launcher</h3>
 <div class="paragraph">
 <p>In Vert.x 5, a new module, the <a href="https://vertx.io/docs/vertx-application-launcher/java/">Vert.x Application Launcher</a> replaces the Vert.x 4.x <code>io.vertx.core.Launcher</code> class.</p>
 </div>
@@ -647,8 +654,10 @@ java -cp $CLASSPATH io.vertx.launcher.application.VertxApplication my.app.MainVe
 </div>
 </div>
 </div>
-<div class="sect2">
-<h3 id="handling_deprecations_and_removals_what-is-new-and-different-in-vertx-5">Handling deprecations and removals</h3>
+</div>
+<div class="sect1">
+<h2 id="_handling_deprecations_and_removals">Handling deprecations and removals</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Some features and functions have been deprecated or removed in Vert.x 5. Before you migrate your applications to Vert.x 5, check for deprecations and removals.</p>
 </div>
@@ -671,10 +680,9 @@ java -cp $CLASSPATH io.vertx.launcher.application.VertxApplication my.app.MainVe
 </div>
 </div>
 </div>
-</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-11-29 04:01:22 UTC
+Last updated 2024-11-29 14:06:09 UTC
 </div>
 </div>
 </body>
