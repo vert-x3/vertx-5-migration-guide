@@ -543,7 +543,12 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_vert_x_application_launcher">Vert.x Application Launcher</a></li>
 </ul>
 </li>
-<li><a href="#_vertx_core">vertx-core</a></li>
+<li><a href="#_vert_x_core">Vert.x Core</a>
+<ul class="sectlevel2">
+<li><a href="#_vertx_instance_customization">Vertx instance customization</a></li>
+<li><a href="#_http_related_changes">HTTP related changes</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -856,17 +861,371 @@ java -cp $CLASSPATH io.vertx.launcher.application.VertxApplication my.app.MainVe
 </div>
 </div>
 <div class="sect1">
-<h2 id="_vertx_core">vertx-core</h2>
+<h2 id="_vert_x_core">Vert.x Core</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_vertx_instance_customization">Vertx instance customization</h3>
 <div class="paragraph">
-<p>TBD.</p>
+<p>An instance of <code>Vertx</code> can be customized with a few moving parts:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>cluster manager</p>
+</li>
+<li>
+<p>metrics factory</p>
+</li>
+<li>
+<p>tracing factory</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In Vert.x 5 customization is achieved by the <code>VertxBuilder</code>.</p>
+</div>
+<div class="listingblock">
+<div class="title">Customizing with a cluster manager</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="predefined-type">Future</span>&lt;Vertx&gt; f = Vertx.clusteredVertx(
+  <span class="keyword">new</span> VertxOptions().setClusterManager(clusterManager)
+);
+
+<span class="comment">// 5.0</span>
+<span class="predefined-type">Future</span>&lt;Vertx&gt; f = Vertx
+  .builder()
+  .withClusterManager(clusterManager)
+  .buildClustered();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Likewise, metrics and tracing factories are configured similarly</p>
+</div>
+<div class="listingblock">
+<div class="title">Customizing with tracing/metrics factories</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+Vertx vertx = Vertx.vertx(
+  <span class="keyword">new</span> VertxOptions()
+    .setMetricsOptions(<span class="keyword">new</span> MetricsOptions().setEnabled(<span class="predefined-constant">true</span>).setFactory(factory))
+    .setTracingOptions(<span class="keyword">new</span> TracingOptions().setFactory(factory))
+);
+
+<span class="comment">// 5.0</span>
+Vertx vertx = Vertx
+   .builder()
+  .withMetrics(factory)
+  .withTracing(factory)
+  .build();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_http_related_changes">HTTP related changes</h3>
+<div class="sect3">
+<h4 id="_http2_connection_shutdown_handler">HTTP/2 connection shutdown handler</h4>
+<div class="paragraph">
+<p>The HTTP/2 connection shutdown handler notifies the handler when the connection shutdown begins, previously the handler was notified when after all the connection streams have been closed. The previous behavior can be obtained with the connection close handler.</p>
+</div>
+<div class="paragraph">
+<p>This allows to be aware of a connection shutdown and take appropriate measures to stop the inflight streams being processed. It also aligns with the behaviour of other shutdown handlers.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_http_connection_shutdown_variant_without_a_timeunit">Removal of HTTP connection shutdown variant without a timeunit</h4>
+<div class="paragraph">
+<p>The <code>HttpConnection#shutdown(long)</code> variant is removed in favor of <code>HttpConnection#shutdown(long, TimeUnit)</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+connection.shutdown(<span class="integer">5</span> * <span class="integer">1000</span>); <span class="comment">// 5 seconds</span>
+
+<span class="comment">// 5.0</span>
+connection.shutdown(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS); <span class="comment">// 5 seconds</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_use_of_uniform_byte_distributor_for_http2_streams">Use of uniform byte distributor for HTTP/2 streams</h4>
+<div class="paragraph">
+<p>The default stream byte distributor use stream priorities to determine the amount of bytes to be sent for each stream, this change allows to use a strategy that does not use stream priorities and yields better performance since it consumes less CPU.</p>
+</div>
+<div class="paragraph">
+<p>The default implementation is now <code>UniformStreamByteDistributor</code> instead of <code>WeightedFairQueueByteDistributor</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_rename_httpclientrequest_settimeout_to_setidletimeout">Rename HttpClientRequest setTimeout to setIdleTimeout</h4>
+<div class="paragraph">
+<p>The request timeout is actually an idle timeout, it has been renamed to avoid confusion.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+request.setTimeout(timeout);
+
+<span class="comment">// 5.0</span>
+request.setIdleTimeout(timeout);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_httpclient_websocket_methods">Removal of HttpClient WebSocket methods</h4>
+<div class="paragraph">
+<p><code>HttpClient</code> WebSocket methods are moved to a new <code>WebSocketClient</code> API.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+HttpClient httpClient = vertx.createHttpClient();
+<span class="predefined-type">Future</span>&lt;WebSocket&gt; f = httpClient.webSocket(connectOptions);
+
+<span class="comment">// 5.0</span>
+WebSocketClient wsClient = vertx.createWebSocketClient();
+<span class="predefined-type">Future</span>&lt;WebSocket&gt; f = wsClient.connect(connectOptions);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_client_customization">HTTP client customization</h4>
+<div class="paragraph">
+<p><code>HttpClient</code> customization methods have been moved to a new <code>HttpClientBuilder</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>redirectHandler</code></p>
+</li>
+<li>
+<p><code>connectionHandler</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+HttpClient client = vertx.createHttpClient();
+client.connectionHandler(conn -&gt; ...);
+client.redirectHandler(request -&gt; ...);
+
+<span class="comment">// 5.0</span>
+HttpClient client = vertx.httpClientBuilder()
+  .withConnectHandler(conn -&gt; ...)
+  .withRedirectHandler(request -&gt; ...)
+  .build();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_httpclient_api_cleanup">HttpClient API cleanup</h4>
+<div class="paragraph">
+<p>In Vert.x 4.x, <code>HttpClient</code> API exposes two distincts API:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>HTTP interactions, like <code>request</code> method.</p>
+</li>
+<li>
+<p>HTTP client operations, like <code>updateSSLOptions</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Since Vert.x 5, <code>HttpClient</code> only retains HTTP interactions, a new <code>HttpClientAgent</code> API extends <code>HttpClient</code> and exposes
+these methods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+HttpClient client = vertx.createHttpClient();
+client.updateSSLOptions(sslOptions);
+
+<span class="comment">// 5.0</span>
+HttpClientAgent client = vertx.createHttpClient();
+client.updateSSLOptions(sslOptions);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_httpclient_pool_configuration">HttpClient pool configuration</h4>
+<div class="paragraph">
+<p>In Vert.x 4.x, <code>HttpClientOptions</code> configures the HTTP/1.x and HTTP/2 pool.</p>
+</div>
+<div class="paragraph">
+<p>Since Vert.x 5, this configuration is done through <code>PoolOptions</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+HttpClient client = vertx.createHttpClient(<span class="keyword">new</span> HttpClientOptions()
+  .setMaxPoolSize(http1MaxPoolSize)
+  .setHttp2MaxPoolSize(http2MaxPoolSize)
+);
+
+<span class="comment">// 5.0</span>
+HttpClient client = vertx.createHttpClient(<span class="keyword">new</span> PoolOptions()
+  .setHttp1MaxSize(http1MaxPoolSize)
+  .setHttp2MaxSize(http2MaxPoolSize)
+);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_httpserverresponse_close_method">Removal of HttpServerResponse close method</h4>
+<div class="paragraph">
+<p>The <code>HttpServerResponse</code> close method closes the HTTP connection, it can be misleading as there are better API to interact
+with the current request/connection lifecycle which are <code>HttpServerResponse#reset</code> and `HttpConnection#close.</p>
+</div>
+<div class="paragraph">
+<p>When the actual HTTP connection must be closed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+response.close();
+
+<span class="comment">// 5.0</span>
+request.connection().close();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When the current request/response must be disposed:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+response.close();
+
+<span class="comment">// 5.0</span>
+response.reset();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_http_stream_async_methods_returns_now_a_future_instead_of_being_fluent">HTTP stream async methods returns now a future instead of being fluent</h4>
+<div class="paragraph">
+<p>A few methods have seen their fluent return type to be changed to a future type instead in order to signal
+the completion result:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>writeCustomFrame</code></p>
+</li>
+<li>
+<p><code>writeContinue</code></p>
+</li>
+<li>
+<p><code>reset</code></p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+response.writeCustomFrame(<span class="integer">12</span>, <span class="integer">134</span>, expectedRecv).end();
+
+<span class="comment">// 5.0</span>
+response.writeCustomFrame(<span class="integer">12</span>, <span class="integer">134</span>, expectedRecv);
+response.end();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_new_authority_property_replacing_hostport">New authority property replacing host/port</h4>
+<div class="paragraph">
+<p><code>HttpClientRequest</code> and <code>HttpServerRequest</code> expose the request authority using a host/port combination for the client
+request and a single host header for the server. In addition, this terminology is also confusing with the actual server
+host and port.</p>
+</div>
+<div class="paragraph">
+<p>Those are replaced by a new <em>authority</em> property:</p>
+</div>
+<div class="listingblock">
+<div class="title">Client request</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+request.setHost(host).setPort(port);
+
+<span class="comment">// 5.0</span>
+request.authority(HostAndPort.create(host, port));</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Server request</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="predefined-type">String</span> host = request.host(); <span class="comment">// host:port string</span>
+
+<span class="comment">// 5.0</span>
+HostAndPort authority = request.authority();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_httpserver_request_and_websocket_streams_removal">HttpServer request and WebSocket streams removal</h4>
+<div class="paragraph">
+<p><code>HttpServer#requestStream()</code> and <code>HttpServer#timeoutStream()</code> have been removed. These streams were designed for Rx like
+ languages and the actually don&#8217;t provide any benefits.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+server.requestStream().handler(request -&gt; ...);
+
+<span class="comment">// 5.0</span>
+server.requestHandler(request -&gt; ...).listen();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_server_websocket_handshake_methods">Removal of server WebSocket handshake methods</h4>
+<div class="paragraph">
+<p>The server WebSocket API can control handshake implicitly (e.g. sending a message) or explicitly (accept or any WebSocket interaction). This result in a more complex implementation than it should be for such API.</p>
+</div>
+<div class="listingblock">
+<div class="title">Accepting a handshake</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+server.webSocketHandler(ws -&gt; {
+  ws.accept();
+  ws.write();
+};
+
+<span class="comment">// 5.0</span>
+server.webSocketHandshakeHandler(handshake -&gt; {
+  handshake.accept();
+});
+server.webSocketHandler(ws -&gt; {
+  ws.write();
+};</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Rejecting a handshake</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+server.webSocketHandler(ws -&gt; {
+  ws.reject();
+};
+
+<span class="comment">// 5.0</span>
+server.webSocketHandshakeHandler(handshake -&gt; {
+  handshake.reject();
+});</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-12-03 13:41:19 UTC
+Last updated 2024-12-03 14:53:47 UTC
 </div>
 </div>
 </body>
