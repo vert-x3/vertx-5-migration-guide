@@ -22,6 +22,8 @@ include::modules/component_sunsets_and_removals.adoc[leveloffset=+1]
 
 include::modules/embracing_the_future_model.adoc[leveloffset=+1]
 
+== Changes in components
+
 include::modules/vertx_cli_removal.adoc[leveloffset=+1]
 
 include::modules/cli_framework_deprecation.adoc[leveloffset=+1]
