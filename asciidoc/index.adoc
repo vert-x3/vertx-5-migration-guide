@@ -3,6 +3,7 @@
 :v5: 5
 :v5x: 5.x
 :v4x: 4.x
+:VertX5: Vert.x 5
 
 This guide describes the updates in Eclipse Vert.x {v5} release. Use the information to upgrade your {VertX} {v4x} applications to {VertX} {v5}. It provides information about the new, deprecated and unsupported features in this release.
 

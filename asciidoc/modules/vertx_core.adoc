@@ -1,3 +1,288 @@
-= vertx-core
+= Vert.x Core
 
-TBD.
+== Vertx instance customization
+
+An instance of `Vertx` can be customized with a few moving parts:
+
+- cluster manager
+- metrics factory
+- tracing factory
+
+In {VertX5} customization is achieved by the `VertxBuilder`.
+
+.Customizing with a cluster manager
+[source,java]
+----
+// 4.x
+Future<Vertx> f = Vertx.clusteredVertx(
+  new VertxOptions().setClusterManager(clusterManager)
+);
+
+// 5.0
+Future<Vertx> f = Vertx
+  .builder()
+  .withClusterManager(clusterManager)
+  .buildClustered();
+----
+
+Likewise, metrics and tracing factories are configured similarly
+
+.Customizing with tracing/metrics factories
+[source,java]
+----
+// 4.x
+Vertx vertx = Vertx.vertx(
+  new VertxOptions()
+    .setMetricsOptions(new MetricsOptions().setEnabled(true).setFactory(factory))
+    .setTracingOptions(new TracingOptions().setFactory(factory))
+);
+
+// 5.0
+Vertx vertx = Vertx
+   .builder()
+  .withMetrics(factory)
+  .withTracing(factory)
+  .build();
+----
+
+== HTTP related changes
+
+=== HTTP/2 connection shutdown handler
+
+The HTTP/2 connection shutdown handler notifies the handler when the connection shutdown begins, previously the handler was notified when after all the connection streams have been closed. The previous behavior can be obtained with the connection close handler.
+
+This allows to be aware of a connection shutdown and take appropriate measures to stop the inflight streams being processed. It also aligns with the behaviour of other shutdown handlers.
+
+=== Removal of HTTP connection shutdown variant without a timeunit
+
+The `HttpConnection#shutdown(long)` variant is removed in favor of `HttpConnection#shutdown(long, TimeUnit)`.
+
+[source,java]
+----
+// 4.x
+connection.shutdown(5 * 1000); // 5 seconds
+
+// 5.0
+connection.shutdown(5, TimeUnit.SECONDS); // 5 seconds
+----
+
+=== Use of uniform byte distributor for HTTP/2 streams
+
+The default stream byte distributor use stream priorities to determine the amount of bytes to be sent for each stream, this change allows to use a strategy that does not use stream priorities and yields better performance since it consumes less CPU.
+
+The default implementation is now `UniformStreamByteDistributor` instead of `WeightedFairQueueByteDistributor`.
+
+=== Rename HttpClientRequest setTimeout to setIdleTimeout
+
+The request timeout is actually an idle timeout, it has been renamed to avoid confusion.
+
+[source,java]
+----
+// 4.x
+request.setTimeout(timeout);
+
+// 5.0
+request.setIdleTimeout(timeout);
+----
+
+=== Removal of HttpClient WebSocket methods
+
+`HttpClient` WebSocket methods are moved to a new `WebSocketClient` API.
+
+[source,java]
+----
+// 4.x
+HttpClient httpClient = vertx.createHttpClient();
+Future<WebSocket> f = httpClient.webSocket(connectOptions);
+
+// 5.0
+WebSocketClient wsClient = vertx.createWebSocketClient();
+Future<WebSocket> f = wsClient.connect(connectOptions);
+----
+
+=== HTTP client customization
+
+`HttpClient` customization methods have been moved to a new `HttpClientBuilder`:
+
+- `redirectHandler`
+- `connectionHandler`
+
+[source,java]
+----
+// 4.x
+HttpClient client = vertx.createHttpClient();
+client.connectionHandler(conn -> ...);
+client.redirectHandler(request -> ...);
+
+// 5.0
+HttpClient client = vertx.httpClientBuilder()
+  .withConnectHandler(conn -> ...)
+  .withRedirectHandler(request -> ...)
+  .build();
+----
+
+=== HttpClient API cleanup
+
+In {VertX} {v4x}, `HttpClient` API exposes two distincts API:
+
+- HTTP interactions, like `request` method.
+- HTTP client operations, like `updateSSLOptions`
+
+Since {VertX5}, `HttpClient` only retains HTTP interactions, a new `HttpClientAgent` API extends `HttpClient` and exposes
+these methods:
+
+[source,java]
+----
+// 4.x
+HttpClient client = vertx.createHttpClient();
+client.updateSSLOptions(sslOptions);
+
+// 5.0
+HttpClientAgent client = vertx.createHttpClient();
+client.updateSSLOptions(sslOptions);
+----
+
+=== HttpClient pool configuration
+
+In {VertX} {v4x}, `HttpClientOptions` configures the HTTP/1.x and HTTP/2 pool.
+
+Since {VertX5}, this configuration is done through `PoolOptions`.
+
+[source,java]
+----
+// 4.x
+HttpClient client = vertx.createHttpClient(new HttpClientOptions()
+  .setMaxPoolSize(http1MaxPoolSize)
+  .setHttp2MaxPoolSize(http2MaxPoolSize)
+);
+
+// 5.0
+HttpClient client = vertx.createHttpClient(new PoolOptions()
+  .setHttp1MaxSize(http1MaxPoolSize)
+  .setHttp2MaxSize(http2MaxPoolSize)
+);
+----
+
+=== Removal of HttpServerResponse close method
+
+The `HttpServerResponse` close method closes the HTTP connection, it can be misleading as there are better API to interact
+with the current request/connection lifecycle which are `HttpServerResponse#reset` and `HttpConnection#close.
+
+When the actual HTTP connection must be closed:
+
+[source,java]
+----
+// 4.x
+response.close();
+
+// 5.0
+request.connection().close();
+----
+
+When the current request/response must be disposed:
+
+[source,java]
+----
+// 4.x
+response.close();
+
+// 5.0
+response.reset();
+----
+
+=== HTTP stream async methods returns now a future instead of being fluent
+
+A few methods have seen their fluent return type to be changed to a future type instead in order to signal
+the completion result:
+
+- `writeCustomFrame`
+- `writeContinue`
+- `reset`
+
+[source,java]
+----
+// 4.x
+response.writeCustomFrame(12, 134, expectedRecv).end();
+
+// 5.0
+response.writeCustomFrame(12, 134, expectedRecv);
+response.end();
+----
+
+=== New authority property replacing host/port
+
+`HttpClientRequest` and `HttpServerRequest` expose the request authority using a host/port combination for the client
+request and a single host header for the server. In addition, this terminology is also confusing with the actual server
+host and port.
+
+Those are replaced by a new _authority_ property:
+
+.Client request
+[source,java]
+----
+// 4.x
+request.setHost(host).setPort(port);
+
+// 5.0
+request.authority(HostAndPort.create(host, port));
+----
+
+.Server request
+[source,java]
+----
+// 4.x
+String host = request.host(); // host:port string
+
+// 5.0
+HostAndPort authority = request.authority();
+----
+
+=== HttpServer request and WebSocket streams removal
+
+`HttpServer#requestStream()` and `HttpServer#timeoutStream()` have been removed. These streams were designed for Rx like
+ languages and the actually don't provide any benefits.
+
+[source,java]
+----
+// 4.x
+server.requestStream().handler(request -> ...);
+
+// 5.0
+server.requestHandler(request -> ...).listen();
+----
+
+=== Removal of server WebSocket handshake methods
+
+The server WebSocket API can control handshake implicitly (e.g. sending a message) or explicitly (accept or any WebSocket interaction). This result in a more complex implementation than it should be for such API.
+
+.Accepting a handshake
+[source,java]
+----
+// 4.x
+server.webSocketHandler(ws -> {
+  ws.accept();
+  ws.write();
+};
+
+// 5.0
+server.webSocketHandshakeHandler(handshake -> {
+  handshake.accept();
+});
+server.webSocketHandler(ws -> {
+  ws.write();
+};
+----
+
+.Rejecting a handshake
+[source,java]
+----
+// 4.x
+server.webSocketHandler(ws -> {
+  ws.reject();
+};
+
+// 5.0
+server.webSocketHandshakeHandler(handshake -> {
+  handshake.reject();
+});
+----
