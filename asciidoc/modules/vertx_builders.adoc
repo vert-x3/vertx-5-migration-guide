@@ -1,0 +1,25 @@
+= Vertx builders
+
+{VertX} {v5} has introduced the usage of the builder pattern that facilitate component configuration with instances of objects.
+
+Until {v5}, such customisation was usually supported by options.
+
+.Customizing a Vertx instance in {VertX} {v4x}
+[source,java]
+----
+Future<Vertx> future = Vertx.clusteredVertx(options.setClusterManager(clusterManager));
+----
+
+The builder pattern provide a clean and simple alternative to separate _configuration_ and _customization_.
+
+.Customizing a Vertx instance in {VertX} {v5}
+[source,java]
+----
+Future<Vertx> f = Vertx
+  .builder()
+  .with(options)
+  .withClusterManager(clusterManager)
+  .buildClustered();
+----
+
+This pattern has been adopted whenever possible in {VertX} {v5} and will be detailed on a per component basis.
