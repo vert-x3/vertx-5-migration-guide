@@ -286,3 +286,163 @@ server.webSocketHandshakeHandler(handshake -> {
   handshake.reject();
 });
 ----
+
+== Future
+
+=== CompositeFuture raw Future type removal
+
+`CompositeFuture` methods declare raw `Future` types, e.g. `all(Future,Future) or all(List<Future>>)`, such declarations force the user to cast when using a `List<Future<Something>>`. These methods have been made fully generic, using the wildcard type.
+
+[source,java]
+----
+List<Future<User>> users = ...
+
+// 4.x
+CompositeFuture cf = CompositeFuture.all((List<Future>)users);
+
+// 5.0
+CompositeFuture cf = Future.all(users);
+----
+
+=== Removal of Future eventually method that takes a function as argument
+
+`Future#eventually` method takes as parameter a `Function<Void, Future<T>>`, this was developed for codegen which does not support `Supplier`. The `Future` object is not code generated anymore since {VertX} {v4x}, we can therefore use `Supplier` which is more suitable.
+
+[source,java]
+----
+// 4.x
+future.eventually(v -> someFuture());
+
+// 5.0
+future.eventually(() -> someFuture());
+----
+
+== System properties
+
+A few system properties have been removed in Vert.x 5.
+
+|===
+|Name|Comment
+
+|`vertx.json.base64`
+|Vert.x 3.x Json supports RFC-7493, however the JSON encoder/decoder format was incorrect. Users who needed to interop with Vert.x 3.x applications should have set the system property vertx.json.base64 to legacy
+
+|`vertx.cluster.managerClass`
+|not used, neither documented nor tested
+
+|`vertx.javaCompilerOptions`
+|not used, neither documented nor tested
+
+|`vertx.flashPolicyHandler`
+|{VertX} HTTP/1.1 server contains a hidden option to detect Adobe Flash clients and return a policy file response (http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html). This option is activated by a system property vertx.flashPolicyHandler only referenced in source code (private field) and not tested.
+
+|`vertx.cwd`
+|this system property was not documented and only used in vertx-examples repository
+
+|`vertx.disableTCCL`
+|instead `VertxOptions#setDisableTCCL(boolean)` should be used
+|===
+
+== Worker verticles
+
+=== Removal of deployment worker property
+
+`DeploymentOptions#setWorker` and `DeploymentOptions#getWorker` methods are removed since the introduction of the new `ThreadingModel`.
+
+[source,java]
+----
+// 4.x
+Future<String> f = vertx.deployVerticle(new DeploymentOptions().setWorker(true, ...)
+
+// 5.0
+Future<String> f = vertx.deployVerticle(new DeploymentOptions().setThreadingModel(ThreadingModel.WORKER, ...)
+----
+
+=== Worker event-loop assignment
+
+Since {VertX5} worker deployment uses a single event-loop for all worker verticles instead of an event-loop per worker
+instance.
+
+Previously, this was following event-loop deployments which use an event-loop per verticle instance for scalability purpose.
+
+== Miscellaneous
+
+=== NetServer connect stream removals
+
+`NetServer#connectStream()` has been removed. This stream was designed for Rx like languages and the actually don't provide any benefits at the expense of the API.
+
+[source,java]
+----
+// 4.x
+server.connectStream().handler(socket -> ...);
+
+// 5.0
+server.connectHandler(socket -> ...).listen();
+----
+
+=== TimeoutStream removal
+
+`TimeoutStream` has been removed. This stream was designed for Rx like languages and the actually don't provide any benefits at the expense of the API. Instead, the framework scheduler should be used instead along with a Vert.x context.
+
+[source,java]
+----
+// 4.x
+vertx.periodicStream(1L).handler(timerID -> ...);
+
+// 5.0
+server.setPeriodic(1L, timerID -> ...);
+----
+
+For RxJava like integrations
+
+[source,java]
+----
+// 4.x
+Observable<Long> timer = vertx.periodicStream(1000).toObservable();
+
+// 5.0
+Scheduler scheduler = RxHelper.scheduler(vertx);
+Observable<Long> timer = Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
+----
+
+=== keyCertOptions key manager mapper removal
+
+`KeyCertOptions#keyManagerMapper()` method has been removed in {VertX5}, implementors must instead implement `keyManagerFactoryMappermethod` that provides the opportunity to cache the `KeyManagerFactory` to the implementor that controls the lifecycle of the key manager.
+
+=== Removal of execute blocking methods with a handler of promise
+
+The API for executing blocking actions uses a pattern with handler completing or failing a promise, instead this can be replaced with `java.util.concurrent.Callable` that returns the same value or throws an exception.
+
+[source,java]
+----
+// 4.x
+Future<String> fut = vertx.executeBlocking(promise -> promise.complete("result"));
+
+// 5.0
+Future<String> fut = vertx.executeBlocking(() -> "result");
+----
+
+=== processArgs methods deprecated
+
+`io.vertx.core.Context#processArgs` and `io.vertx.core.AbstractVerticle#processArgs` are deprecated.
+
+As of version {v5}, {VertX} is no longer tightly coupled to the CLI.
+
+=== Netty type usage removals
+
+The Vert.x API exposes the Netty API in its public API, allowing interactions with the Netty API. Since Netty is evolving toward Netty 5, we should remove Netty API from the Vert.x public API in {VertX5} to have the opportunity to change the underlying Netty version used by {VertX} without worrying about the version of the Netty version.
+
+Such API continues to exist in {VertX5} but is moved to internal API which is not contractual, therefore experimented users of this API can continue to use it granted that the version of {VertX5} uses Netty 4.
+
+[source,java]
+----
+// 4.x
+ByteBuf bb = buff.getByteBuf();
+Buffer buf = Buffer.buffer(bb);
+EventLoopGroup group = vertx.nettyEventLoopGroup();
+
+// 5.0
+ByteBuf bb = ((BufferInternal)buff).getByteBuf();
+buf = BufferInternal.buffer(bb);
+group = ((VertxInternal)vertx).nettyEventLoopGroup();
+----
