@@ -547,6 +547,10 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <ul class="sectlevel2">
 <li><a href="#_vertx_instance_customization">Vertx instance customization</a></li>
 <li><a href="#_http_related_changes">HTTP related changes</a></li>
+<li><a href="#_future">Future</a></li>
+<li><a href="#_system_properties">System properties</a></li>
+<li><a href="#_worker_verticles">Worker verticles</a></li>
+<li><a href="#_miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
 </ul>
@@ -1220,12 +1224,217 @@ server.webSocketHandshakeHandler(handshake -&gt; {
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_future">Future</h3>
+<div class="sect3">
+<h4 id="_compositefuture_raw_future_type_removal">CompositeFuture raw Future type removal</h4>
+<div class="paragraph">
+<p><code>CompositeFuture</code> methods declare raw <code>Future</code> types, e.g. <code>all(Future,Future) or all(List&lt;Future&gt;&gt;)</code>, such declarations force the user to cast when using a <code>List&lt;Future&lt;Something&gt;&gt;</code>. These methods have been made fully generic, using the wildcard type.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="predefined-type">List</span>&lt;<span class="predefined-type">Future</span>&lt;User&gt;&gt; users = ...
+
+<span class="comment">// 4.x</span>
+CompositeFuture cf = CompositeFuture.all((<span class="predefined-type">List</span>&lt;<span class="predefined-type">Future</span>&gt;)users);
+
+<span class="comment">// 5.0</span>
+CompositeFuture cf = <span class="predefined-type">Future</span>.all(users);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_future_eventually_method_that_takes_a_function_as_argument">Removal of Future eventually method that takes a function as argument</h4>
+<div class="paragraph">
+<p><code>Future#eventually</code> method takes as parameter a <code>Function&lt;Void, Future&lt;T&gt;&gt;</code>, this was developed for codegen which does not support <code>Supplier</code>. The <code>Future</code> object is not code generated anymore since Vert.x 4.x, we can therefore use <code>Supplier</code> which is more suitable.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+future.eventually(v -&gt; someFuture());
+
+<span class="comment">// 5.0</span>
+future.eventually(() -&gt; someFuture());</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_system_properties">System properties</h3>
+<div class="paragraph">
+<p>A few system properties have been removed in Vert.x 5.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Name</th>
+<th class="tableblock halign-left valign-top">Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.json.base64</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x 3.x Json supports RFC-7493, however the JSON encoder/decoder format was incorrect. Users who needed to interop with Vert.x 3.x applications should have set the system property vertx.json.base64 to legacy</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.cluster.managerClass</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">not used, neither documented nor tested</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.javaCompilerOptions</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">not used, neither documented nor tested</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.flashPolicyHandler</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x HTTP/1.1 server contains a hidden option to detect Adobe Flash clients and return a policy file response (<a href="http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html" class="bare">http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html</a>). This option is activated by a system property vertx.flashPolicyHandler only referenced in source code (private field) and not tested.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.cwd</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">this system property was not documented and only used in vertx-examples repository</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.disableTCCL</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">instead <code>VertxOptions#setDisableTCCL(boolean)</code> should be used</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_worker_verticles">Worker verticles</h3>
+<div class="sect3">
+<h4 id="_removal_of_deployment_worker_property">Removal of deployment worker property</h4>
+<div class="paragraph">
+<p><code>DeploymentOptions#setWorker</code> and <code>DeploymentOptions#getWorker</code> methods are removed since the introduction of the new <code>ThreadingModel</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="predefined-type">Future</span>&lt;<span class="predefined-type">String</span>&gt; f = vertx.deployVerticle(<span class="keyword">new</span> DeploymentOptions().setWorker(<span class="predefined-constant">true</span>, ...)
+
+<span class="comment">// 5.0</span>
+<span class="predefined-type">Future</span>&lt;<span class="predefined-type">String</span>&gt; f = vertx.deployVerticle(<span class="keyword">new</span> DeploymentOptions().setThreadingModel(ThreadingModel.WORKER, ...)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_worker_event_loop_assignment">Worker event-loop assignment</h4>
+<div class="paragraph">
+<p>Since Vert.x 5 worker deployment uses a single event-loop for all worker verticles instead of an event-loop per worker
+instance.</p>
+</div>
+<div class="paragraph">
+<p>Previously, this was following event-loop deployments which use an event-loop per verticle instance for scalability purpose.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_miscellaneous">Miscellaneous</h3>
+<div class="sect3">
+<h4 id="_netserver_connect_stream_removals">NetServer connect stream removals</h4>
+<div class="paragraph">
+<p><code>NetServer#connectStream()</code> has been removed. This stream was designed for Rx like languages and the actually don&#8217;t provide any benefits at the expense of the API.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+server.connectStream().handler(socket -&gt; ...);
+
+<span class="comment">// 5.0</span>
+server.connectHandler(socket -&gt; ...).listen();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_timeoutstream_removal">TimeoutStream removal</h4>
+<div class="paragraph">
+<p><code>TimeoutStream</code> has been removed. This stream was designed for Rx like languages and the actually don&#8217;t provide any benefits at the expense of the API. Instead, the framework scheduler should be used instead along with a Vert.x context.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+vertx.periodicStream(<span class="integer">1L</span>).handler(timerID -&gt; ...);
+
+<span class="comment">// 5.0</span>
+server.setPeriodic(<span class="integer">1L</span>, timerID -&gt; ...);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For RxJava like integrations</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Long</span>&gt; timer = vertx.periodicStream(<span class="integer">1000</span>).toObservable();
+
+<span class="comment">// 5.0</span>
+Scheduler scheduler = RxHelper.scheduler(vertx);
+<span class="predefined-type">Observable</span>&lt;<span class="predefined-type">Long</span>&gt; timer = <span class="predefined-type">Observable</span>.interval(<span class="integer">100</span>, <span class="integer">100</span>, <span class="predefined-type">TimeUnit</span>.MILLISECONDS, scheduler);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_keycertoptions_key_manager_mapper_removal">keyCertOptions key manager mapper removal</h4>
+<div class="paragraph">
+<p><code>KeyCertOptions#keyManagerMapper()</code> method has been removed in Vert.x 5, implementors must instead implement <code>keyManagerFactoryMappermethod</code> that provides the opportunity to cache the <code>KeyManagerFactory</code> to the implementor that controls the lifecycle of the key manager.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_execute_blocking_methods_with_a_handler_of_promise">Removal of execute blocking methods with a handler of promise</h4>
+<div class="paragraph">
+<p>The API for executing blocking actions uses a pattern with handler completing or failing a promise, instead this can be replaced with <code>java.util.concurrent.Callable</code> that returns the same value or throws an exception.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="predefined-type">Future</span>&lt;<span class="predefined-type">String</span>&gt; fut = vertx.executeBlocking(promise -&gt; promise.complete(<span class="string"><span class="delimiter">&quot;</span><span class="content">result</span><span class="delimiter">&quot;</span></span>));
+
+<span class="comment">// 5.0</span>
+<span class="predefined-type">Future</span>&lt;<span class="predefined-type">String</span>&gt; fut = vertx.executeBlocking(() -&gt; <span class="string"><span class="delimiter">&quot;</span><span class="content">result</span><span class="delimiter">&quot;</span></span>);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_processargs_methods_deprecated">processArgs methods deprecated</h4>
+<div class="paragraph">
+<p><code>io.vertx.core.Context#processArgs</code> and <code>io.vertx.core.AbstractVerticle#processArgs</code> are deprecated.</p>
+</div>
+<div class="paragraph">
+<p>As of version 5, Vert.x is no longer tightly coupled to the CLI.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_netty_type_usage_removals">Netty type usage removals</h4>
+<div class="paragraph">
+<p>The Vert.x API exposes the Netty API in its public API, allowing interactions with the Netty API. Since Netty is evolving toward Netty 5, we should remove Netty API from the Vert.x public API in Vert.x 5 to have the opportunity to change the underlying Netty version used by Vert.x without worrying about the version of the Netty version.</p>
+</div>
+<div class="paragraph">
+<p>Such API continues to exist in Vert.x 5 but is moved to internal API which is not contractual, therefore experimented users of this API can continue to use it granted that the version of Vert.x 5 uses Netty 4.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+ByteBuf bb = buff.getByteBuf();
+<span class="predefined-type">Buffer</span> buf = <span class="predefined-type">Buffer</span>.buffer(bb);
+EventLoopGroup group = vertx.nettyEventLoopGroup();
+
+<span class="comment">// 5.0</span>
+ByteBuf bb = ((BufferInternal)buff).getByteBuf();
+buf = BufferInternal.buffer(bb);
+group = ((VertxInternal)vertx).nettyEventLoopGroup();</code></pre>
+</div>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-12-03 14:53:47 UTC
+Last updated 2024-12-03 16:01:39 UTC
 </div>
 </div>
 </body>
