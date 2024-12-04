@@ -553,12 +553,72 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
+<li><a href="#_vert_x_grpc">Vert.x gRPC</a>
+<ul class="sectlevel2">
+<li><a href="#_removal_of_grpcreadstreamcollecting_in_favour_of_readstreamcollect">Removal of GrpcReadStream#collecting in favour of ReadStream#collect</a></li>
+<li><a href="#_removal_of_methods_declaring_a_method_descriptor">Removal of methods declaring a method descriptor</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_web_client">Vert.x Web Client</a>
+<ul class="sectlevel2">
+<li><a href="#_response_expectation_replacement">Response expectation replacement</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_web_graphql">Vert.x Web GraphQL</a>
+<ul class="sectlevel2">
+<li><a href="#_upgrade_to_graphql_java_22">Upgrade to GraphQL-Java 22</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_web_validation">Vert.x Web Validation</a>
+<ul class="sectlevel2">
+<li><a href="#_replacement_of_deprecated_schemaparser">Replacement of deprecated SchemaParser</a></li>
+</ul>
+</li>
 <li><a href="#_vert_x_sql_client">Vert.x SQL Client</a>
 <ul class="sectlevel2">
 <li><a href="#_client_builder">Client builder</a></li>
 <li><a href="#_connect_options">Connect options</a></li>
 <li><a href="#_pool_connect_handler">Pool connect handler</a></li>
 <li><a href="#_pool_connection_provider">Pool connection provider</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_mongo_client">Vert.x Mongo Client</a>
+<ul class="sectlevel2">
+<li><a href="#_upgrade_to_mongodb_java_driver_5">Upgrade to MongoDB Java Driver 5</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_health_check">Vert.x Health Check</a>
+<ul class="sectlevel2">
+<li><a href="#_health_checks_dependencies_improvements">Health checks dependencies improvements</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_reactive_extensions">Vert.x Reactive Extensions</a>
+<ul class="sectlevel2">
+<li><a href="#_data_object_changes">Data object changes</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_micrometer_metrics">Vert.x Micrometer Metrics</a>
+<ul class="sectlevel2">
+<li><a href="#_upgrade_to_micrometer_1_13">Upgrade to Micrometer 1.13</a></li>
+<li><a href="#_http_client_pool_metrics">HTTP client pool metrics</a></li>
+<li><a href="#_remove_setting_a_registry_on_options">Remove setting a registry on options</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_dropwizard_metrics">Vert.x Dropwizard Metrics</a>
+<ul class="sectlevel2">
+<li><a href="#_http_client_pool_metrics_2">HTTP client pool metrics</a></li>
+<li><a href="#_remove_setting_a_metrics_registry_on_metrics_options">Remove setting a metrics registry on metrics options</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_json_schema">Vert.x Json Schema</a>
+<ul class="sectlevel2">
+<li><a href="#_deprecated_apis_removal">Deprecated APIs removal</a></li>
+<li><a href="#_additional_error_types">Additional Error Types</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_hazelcast">Vert.x Hazelcast</a>
+<ul class="sectlevel2">
+<li><a href="#_upgrade_to_hazelcast_5_3">Upgrade to Hazelcast 5.3</a></li>
 </ul>
 </li>
 </ul>
@@ -928,7 +988,47 @@ Vertx vertx = Vertx.vertx(
 Vertx vertx = Vertx
    .builder()
   .withMetrics(factory)
-  .withTracing(factory)
+  .withTracer(factory)
+  .build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The tracing implementations of Vert.x have been updated accordingly to support customizing with a tracer implementation for this purpose:</p>
+</div>
+<div class="listingblock">
+<div class="title">Customizing an instance with an OpenTelemetry instance</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+Vertx vertx = Vertx.vertx(<span class="keyword">new</span> VertxOptions()
+    .setTracingOptions(
+      <span class="keyword">new</span> OpenTelemetryOptions(openTelemetry)
+    )
+  );
+
+<span class="comment">// 5.0</span>
+Vertx vertx = Vertx.builder()
+ .withTracer(<span class="keyword">new</span> OpenTelemetryTracingFactory(openTelemetry))
+ .build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The metrics implementations of Vert.x have been updated accordingly to support customizing with a metrics implementation for this purpose:</p>
+</div>
+<div class="listingblock">
+<div class="title">Customizing an instance with a Dropwizard metrics registry</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// Before</span>
+Vertx vertx = Vertx.vertx(<span class="keyword">new</span> VertxOptions()
+ .setMetricsOptions(<span class="keyword">new</span> DropwizardMetricsOptions()
+   .setMetricsRegistry(myRegistry)
+   .setEnabled(<span class="predefined-constant">true</span>)));
+
+<span class="comment">// After</span>
+Vertx vertx = Vertx.builder()
+  .with(<span class="keyword">new</span> VertxOptions()
+    .setMetricsOptions(<span class="keyword">new</span> DropwizardMetricsOptions()
+    .setEnabled(<span class="predefined-constant">true</span>)))
+  .withMetrics(<span class="keyword">new</span> DropwizardMetricsFactory(myRegistry))
   .build();</code></pre>
 </div>
 </div>
@@ -1440,6 +1540,124 @@ group = ((VertxInternal)vertx).nettyEventLoopGroup();</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_vert_x_grpc">Vert.x gRPC</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_removal_of_grpcreadstreamcollecting_in_favour_of_readstreamcollect">Removal of GrpcReadStream#collecting in favour of ReadStream#collect</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+stream.collecting(collector);
+
+<span class="comment">// 5.0</span>
+stream.collect(collector);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_removal_of_methods_declaring_a_method_descriptor">Removal of methods declaring a method descriptor</h3>
+<div class="paragraph">
+<p><code>GrpcClient</code>/<code>GrpcServer</code> methods declaring a <code>MethodDescriptor</code> have been removed.</p>
+</div>
+<div class="paragraph">
+<p>Instead, these methods are now available in <code>GrpcIoClient</code>/<code>GrpcIoServer</code> interfaces which extend <code>GrpcClient</code>/<code>GrpcServer</code> interfaces.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+GrpcServer server = GrpcServer.create(vertx);
+
+<span class="comment">// 5.0</span>
+GrpcIoServer server = GrpcIoServer.create(vertx);
+server.callHandler(methodDescriptor, request -&gt; ...);</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_web_client">Vert.x Web Client</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_response_expectation_replacement">Response expectation replacement</h3>
+<div class="paragraph">
+<p>Vert.x Core introduces a new API to implement expectation checks inspired from the Web Client response expectation feature.</p>
+</div>
+<div class="paragraph">
+<p>The Vert.x HTTP Client comes with the same set of predefined expectations than the Web Client response expectations, more importantly HTTP client response expectations can be re-used by Web Client.</p>
+</div>
+<div class="paragraph">
+<p>HTTP response expectations leverages the new <code>Future#expecting</code> operation combined with the <code>HttpResponseExpectation</code> implementation.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+client
+  .get(<span class="integer">8080</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">myserver.mycompany.com</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/some-uri</span><span class="delimiter">&quot;</span></span>)
+  .expect(ResponsePredicate.SC_SUCCESS)
+  .send()
+  .onSuccess(res -&gt; {
+    <span class="comment">// ....</span>
+  });
+
+<span class="comment">// 5.0</span>
+client
+  .get(<span class="integer">8080</span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">myserver.mycompany.com</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">/some-uri</span><span class="delimiter">&quot;</span></span>)
+  .send()
+  .expecting(HttpResponseExpectation.SC_SUCCESS)
+  .onSuccess(res -&gt; {
+    <span class="comment">// ....</span>
+  });</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_web_graphql">Vert.x Web GraphQL</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_upgrade_to_graphql_java_22">Upgrade to GraphQL-Java 22</h3>
+<div class="paragraph">
+<p>GraphQL-Java 22 is a breaking change release.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_web_validation">Vert.x Web Validation</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_replacement_of_deprecated_schemaparser">Replacement of deprecated SchemaParser</h3>
+<div class="paragraph">
+<p>Vert.x Web Validation was based on a deprecated JSON Schema API, which is no longer available in Vert.x 5.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+ValidationHandlerBuilder.create(schemaParser)
+
+<span class="comment">// 5.0</span>
+SchemaRepository schemaRepo = SchemaRepository.create(<span class="keyword">new</span> JsonSchemaOptions().setDraft(DRAFT7));
+ValidationHandlerBuilder.create(schemaRepo);</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+To improve security, the new <code>SchemaRepository</code> is not automatically loading external references. In case your schema contains an external references you must provide and dereference them upfront.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_vert_x_sql_client">Vert.x SQL Client</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -1536,10 +1754,307 @@ builder.connectingTo(() -&gt; futureOfSqlConnectOptions());</code></pre>
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_vert_x_mongo_client">Vert.x Mongo Client</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_upgrade_to_mongodb_java_driver_5">Upgrade to MongoDB Java Driver 5</h3>
+<div class="paragraph">
+<p>MongoDB Java Driver 5.x is a breaking change release.</p>
+</div>
+<div class="paragraph">
+<p><a href="https://www.mongodb.com/community/forums/t/mongodb-java-driver-5-0-is-released/268913/1" class="bare">https://www.mongodb.com/community/forums/t/mongodb-java-driver-5-0-is-released/268913/1</a></p>
+</div>
+<div class="paragraph">
+<p>In <code>IndexOptions</code>, <code>bucketSize</code> has been removed ,
+<code>StreamFactoryFactory</code> has been replaced by <code>TransportSettings</code>, and Netty is the only available transport.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_health_check">Vert.x Health Check</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_health_checks_dependencies_improvements">Health checks dependencies improvements</h3>
+<div class="paragraph">
+<p>Previously, Vert.x Health Check depended on Vert.x Web and Vert.x Auth. It now only defines the health check API, the health check route handler has been moved to Vert.x Web.</p>
+</div>
+<div class="paragraph">
+<p>This result in a package change in import declarations.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="keyword">import</span> <span class="include">io.vertx.ext.healthchecks.HealthCheckHandler</span>;
+
+<span class="comment">// 5.0</span>
+<span class="keyword">import</span> <span class="include">io.vertx.ext.web.healthchecks.HealthCheckHandler</span>;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_reactive_extensions">Vert.x Reactive Extensions</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_data_object_changes">Data object changes</h3>
+<div class="paragraph">
+<p>A few classes of Vert.x which have been historically annotated with <code>@VertxGen</code> and thus considered as asynchronous types have been converted to data objects.</p>
+</div>
+<div class="paragraph">
+<p>As consequence reactive streams like generators will not need anymore to wrap/unwrap this type which avoids un-necessary allocation.</p>
+</div>
+<div class="paragraph">
+<p>This implies that these objects are not anymore wrapped by Vert.x RX and the type will have their package name changed.</p>
+</div>
+<div class="paragraph">
+<p>The following classes have been promoted to data objects:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>io.vertx.core.buffer.Buffer</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.net.HostAndPort</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.net.SocketAddress</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.net.SelfSignedCertificate</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.MultiMap</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.datagram.DatagramPacket</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.dns.MxRecord</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.dns.SrvRecord</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.file.FileProps</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.file.FileSystemProps</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.http.Cookie</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.http.HttpFrame</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.http.WebSocketFrame</code></p>
+</li>
+<li>
+<p><code>io.vertx.core.json.JsonEvent</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Among all the types above, the Vert.x buffer type is likely the most impacting change.</p>
+</div>
+<div class="paragraph">
+<p><code>io.vertx.core.buffer.Buffer</code> has historically been part of the API as an async generated type, annotated by <code>@VertxGen</code>. It has always been wrapped/unwrapped with reactive stream based like generators.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+io.vertx.reactivex.core.buffer.Buffer buffer = rxApi.getBuffer();
+
+<span class="comment">// 5.0</span>
+io.vertx.core.buffer.Buffer buffer = rxApi.getBuffer();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+stream.write(io.vertx.reactivex.core.buffer.Buffer.buffer(<span class="string"><span class="delimiter">&quot;</span><span class="content">the-string</span><span class="delimiter">&quot;</span></span>));
+
+<span class="comment">// 5.0</span>
+stream.write(io.vertx.core.buffer.Buffer.buffer(<span class="string"><span class="delimiter">&quot;</span><span class="content">the-string</span><span class="delimiter">&quot;</span></span>));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The same applies to the other types mentioned.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_micrometer_metrics">Vert.x Micrometer Metrics</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_upgrade_to_micrometer_1_13">Upgrade to Micrometer 1.13</h3>
+<div class="paragraph">
+<p>Micrometer 1.13 is a breaking change release if you are using the PrometheusMeterRegistry API in your code.</p>
+</div>
+<div class="paragraph">
+<p>Please take a look at Micrometer&#8217;s <a href="https://github.com/micrometer-metrics/micrometer/wiki/1.13-Migration-Guide">migration guide</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_http_client_pool_metrics">HTTP client pool metrics</h3>
+<div class="paragraph">
+<p>HTTP client pool metrics are now exposed as generic pool metrics with pool type http</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>vertx_http_client_queue_pending</code> → <code>vertx_pool_queue_pending</code></p>
+</li>
+<li>
+<p><code>vertx_http_client_queue_time_seconds</code> → <code>vertx_pool_queue_time_seconds</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_remove_setting_a_registry_on_options">Remove setting a registry on options</h3>
+<div class="paragraph">
+<p>The micrometer options setter for a <code>MeterRegistry</code> has been removed in favour of the new <code>VertxBuilder</code> along with the <code>MicrometerMetricsFactory</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+Vertx vertx = Vertx.vertx(<span class="keyword">new</span> VertxOptions()
+ .setMetricsOptions(<span class="keyword">new</span> MicrometerMetricsOptions()
+   .setMicrometerRegistry(myRegistry)
+   .setEnabled(<span class="predefined-constant">true</span>)));
+
+<span class="comment">// 5.0</span>
+Vertx vertx = Vertx.builder()
+  .with(<span class="keyword">new</span> VertxOptions()
+    .setMetricsOptions(<span class="keyword">new</span> MicrometerMetricsOptions()
+    .setEnabled(<span class="predefined-constant">true</span>)))
+  .withMetrics(<span class="keyword">new</span> MicrometerMetricsFactory(myRegistry))
+  .build();</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_dropwizard_metrics">Vert.x Dropwizard Metrics</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_http_client_pool_metrics_2">HTTP client pool metrics</h3>
+<div class="paragraph">
+<p>HTTP client pool metrics are now exposed as generic pool metrics with pool type <code>http</code> and named after the endpoint socket address</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>endpoint.&lt;host:port&gt;.queue-delay</code> → <code>queue-delay</code></p>
+</li>
+<li>
+<p><code>endpoint.&lt;host:port&gt;.queue-size</code> → <code>queue-size</code></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_remove_setting_a_metrics_registry_on_metrics_options">Remove setting a metrics registry on metrics options</h3>
+<div class="paragraph">
+<p>The drop wizard options setter for a <code>MetricsRegistry</code> has been removed in favour of the new <code>VertxBuilder</code> along with the <code>DropwizardMetricsFactory</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+Vertx vertx = Vertx.vertx(<span class="keyword">new</span> VertxOptions()
+ .setMetricsOptions(<span class="keyword">new</span> DropwizardMetricsOptions()
+   .setMetricsRegistry(myRegistry)
+   .setEnabled(<span class="predefined-constant">true</span>)));
+
+<span class="comment">// 5.0</span>
+Vertx vertx = Vertx.builder()
+  .with(<span class="keyword">new</span> VertxOptions()
+    .setMetricsOptions(<span class="keyword">new</span> DropwizardMetricsOptions()
+    .setEnabled(<span class="predefined-constant">true</span>)))
+  .withMetrics(<span class="keyword">new</span> DropwizardMetricsFactory(myRegistry))
+  .build();</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_json_schema">Vert.x Json Schema</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_deprecated_apis_removal">Deprecated APIs removal</h3>
+<div class="paragraph">
+<p>In Vert.x 5 the deprecated JSON Schema APIs are removed. Previously you had for every <em>Draft</em> an own <code>SchemaParser</code>. Now you have a <code>SchemaRepository</code> and can set the <em>Draft</em> in the options.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+JsonObject schemaJson = <span class="keyword">new</span> JsonObject(...);
+<span class="predefined-type">Schema</span> schema = <span class="keyword">new</span> Draft7SchemaParser(SchemaRouter.create(vertx, <span class="keyword">new</span> SchemaRouterOptions())).parse(schemaJson , scope);
+JsonObject jsonToValidate = <span class="keyword">new</span> JsonObject(...);
+schema.validateSync(jsonToValidate);
+
+<span class="comment">// 5.0</span>
+JsonObject schemaJson = <span class="keyword">new</span> JsonObject(...);
+SchemaRepository schemaRepo = SchemaRepository.create(<span class="keyword">new</span> JsonSchemaOptions().setDraft(DRAFT7));
+JsonObject jsonToValidate = <span class="keyword">new</span> JsonObject(...);
+OutputUnit result = schemaRepo.validator(JsonSchema.of(schemaJson)).validate(jsonToValidate);
+
+<span class="keyword">if</span> (result.getValid()) {
+  <span class="comment">// Successful validation</span>
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_additional_error_types">Additional Error Types</h3>
+<div class="paragraph">
+<p>In Vert.x 5 extra basic error types for output units have been added.</p>
+</div>
+<div class="paragraph">
+<p>If you are constructing your own <code>OutputUnits</code>, you will need to include the <code>OutputErrorType</code> now as well. This helps to determine the cause of the failure.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+OutputUnit ou = <span class="keyword">new</span> OutputUnit(<span class="string"><span class="delimiter">&quot;</span><span class="content">instanceLocation</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">absoluteKeywordLocation</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">keywordLocation</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">error</span><span class="delimiter">&quot;</span></span>);
+
+<span class="comment">// 5.0</span>
+<span class="comment">// Available error types are current OutputErrorType.NONE, OutputErrorType.INVALID_VALID, OutputErrorType.MISSING_VALUE</span>
+OutputUnit ou = <span class="keyword">new</span> OutputUnit(<span class="string"><span class="delimiter">&quot;</span><span class="content">instanceLocation</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">absoluteKeywordLocation</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">keywordLocation</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">error</span><span class="delimiter">&quot;</span></span>, OutputErrorType.INVALID_VALUE);</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_hazelcast">Vert.x Hazelcast</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_upgrade_to_hazelcast_5_3">Upgrade to Hazelcast 5.3</h3>
+<div class="paragraph">
+<p>This version includes many security fixes since Hazelcast 4.2.8.</p>
+</div>
+<div class="paragraph">
+<p>It requires JDK 11 to run, which is now the minimum required version in Vert.x 5.</p>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-12-04 09:39:03 UTC
+Last updated 2024-12-04 15:04:13 UTC
 </div>
 </div>
 </body>
