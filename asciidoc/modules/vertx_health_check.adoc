@@ -1,0 +1,16 @@
+= Vert.x Health Check
+
+== Health checks dependencies improvements
+
+Previously, Vert.x Health Check depended on Vert.x Web and Vert.x Auth. It now only defines the health check API, the health check route handler has been moved to Vert.x Web.
+
+This result in a package change in import declarations.
+
+[source,java]
+----
+// 4.x
+import io.vertx.ext.healthchecks.HealthCheckHandler;
+
+// 5.0
+import io.vertx.ext.web.healthchecks.HealthCheckHandler;
+----

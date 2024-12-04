@@ -1,0 +1,41 @@
+= Vert.x Json Schema
+
+== Deprecated APIs removal
+
+In {VertX5} the deprecated JSON Schema APIs are removed. Previously you had for every _Draft_ an own `SchemaParser`. Now you have a `SchemaRepository` and can set the _Draft_ in the options.
+
+[source,java]
+----
+// 4.x
+JsonObject schemaJson = new JsonObject(...);
+Schema schema = new Draft7SchemaParser(SchemaRouter.create(vertx, new SchemaRouterOptions())).parse(schemaJson , scope);
+JsonObject jsonToValidate = new JsonObject(...);
+schema.validateSync(jsonToValidate);
+
+// 5.0
+JsonObject schemaJson = new JsonObject(...);
+SchemaRepository schemaRepo = SchemaRepository.create(new JsonSchemaOptions().setDraft(DRAFT7));
+JsonObject jsonToValidate = new JsonObject(...);
+OutputUnit result = schemaRepo.validator(JsonSchema.of(schemaJson)).validate(jsonToValidate);
+
+if (result.getValid()) {
+  // Successful validation
+}
+----
+
+== Additional Error Types
+
+In {VertX5} extra basic error types for output units have been added.
+
+If you are constructing your own `OutputUnits`, you will need to include the `OutputErrorType` now as well. This helps to determine the cause of the failure.
+
+[source,java]
+----
+// 4.x
+OutputUnit ou = new OutputUnit("instanceLocation", "absoluteKeywordLocation", "keywordLocation", "error");
+
+// 5.0
+// Available error types are current OutputErrorType.NONE, OutputErrorType.INVALID_VALID, OutputErrorType.MISSING_VALUE
+OutputUnit ou = new OutputUnit("instanceLocation", "absoluteKeywordLocation", "keywordLocation", "error", OutputErrorType.INVALID_VALUE);
+----
+

@@ -1,0 +1,52 @@
+= Vert.x Reactive Extensions
+
+== Data object changes
+
+A few classes of {VertX} which have been historically annotated with `@VertxGen` and thus considered as asynchronous types have been converted to data objects.
+
+As consequence reactive streams like generators will not need anymore to wrap/unwrap this type which avoids un-necessary allocation.
+
+This implies that these objects are not anymore wrapped by {VertX} RX and the type will have their package name changed.
+
+The following classes have been promoted to data objects:
+
+- `io.vertx.core.buffer.Buffer`
+- `io.vertx.core.net.HostAndPort`
+- `io.vertx.core.net.SocketAddress`
+- `io.vertx.core.net.SelfSignedCertificate`
+- `io.vertx.core.MultiMap`
+- `io.vertx.core.datagram.DatagramPacket`
+- `io.vertx.core.dns.MxRecord`
+- `io.vertx.core.dns.SrvRecord`
+- `io.vertx.core.file.FileProps`
+- `io.vertx.core.file.FileSystemProps`
+- `io.vertx.core.http.Cookie`
+- `io.vertx.core.http.HttpFrame`
+- `io.vertx.core.http.WebSocketFrame`
+- `io.vertx.core.json.JsonEvent`
+
+Among all the types above, the {VertX} buffer type is likely the most impacting change.
+
+`io.vertx.core.buffer.Buffer` has historically been part of the API as an async generated type, annotated by `@VertxGen`. It has always been wrapped/unwrapped with reactive stream based like generators.
+
+[source,java]
+----
+// 4.x
+io.vertx.reactivex.core.buffer.Buffer buffer = rxApi.getBuffer();
+
+// 5.0
+io.vertx.core.buffer.Buffer buffer = rxApi.getBuffer();
+----
+
+or
+
+[source,java]
+----
+// 4.x
+stream.write(io.vertx.reactivex.core.buffer.Buffer.buffer("the-string"));
+
+// 5.0
+stream.write(io.vertx.core.buffer.Buffer.buffer("the-string"));
+----
+
+The same applies to the other types mentioned.

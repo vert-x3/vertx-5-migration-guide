@@ -33,4 +33,26 @@ include::modules/cli_framework_deprecation.adoc[leveloffset=+1]
 
 include::modules/vertx_core.adoc[leveloffset=+1]
 
+include::modules/vertx_grpc.adoc[leveloffset=+1]
+
+include::modules/vertx_web_client.adoc[leveloffset=+1]
+
+include::modules/vertx_web_graphql.adoc[leveloffset=+1]
+
+include::modules/vertx_web_validation.adoc[leveloffset=+1]
+
 include::modules/vertx_sql_client.adoc[leveloffset=+1]
+
+include::modules/vertx_mongo_client.adoc[leveloffset=+1]
+
+include::modules/vertx_health_check.adoc[leveloffset=+1]
+
+include::modules/vertx_rx.adoc[leveloffset=+1]
+
+include::modules/vertx_micrometer_metrics.adoc[leveloffset=+1]
+
+include::modules/vertx_dropwizard_metrics.adoc[leveloffset=+1]
+
+include::modules/vertx_json_schema.adoc[leveloffset=+1]
+
+include::modules/vertx_hazelcast.adoc[leveloffset=+1]

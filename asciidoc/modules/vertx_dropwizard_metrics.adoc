@@ -1,0 +1,29 @@
+= Vert.x Dropwizard Metrics
+
+== HTTP client pool metrics
+
+HTTP client pool metrics are now exposed as generic pool metrics with pool type `http` and named after the endpoint socket address
+
+- `endpoint.<host:port>.queue-delay` → `queue-delay`
+- `endpoint.<host:port>.queue-size` → `queue-size`
+
+== Remove setting a metrics registry on metrics options
+
+The drop wizard options setter for a `MetricsRegistry` has been removed in favour of the new `VertxBuilder` along with the `DropwizardMetricsFactory`.
+
+[source,java]
+----
+// 4.x
+Vertx vertx = Vertx.vertx(new VertxOptions()
+ .setMetricsOptions(new DropwizardMetricsOptions()
+   .setMetricsRegistry(myRegistry)
+   .setEnabled(true)));
+
+// 5.0
+Vertx vertx = Vertx.builder()
+  .with(new VertxOptions()
+    .setMetricsOptions(new DropwizardMetricsOptions()
+    .setEnabled(true)))
+  .withMetrics(new DropwizardMetricsFactory(myRegistry))
+  .build();
+----

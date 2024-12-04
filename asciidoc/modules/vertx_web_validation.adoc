@@ -1,0 +1,18 @@
+= Vert.x Web Validation
+
+== Replacement of deprecated SchemaParser
+
+Vert.x Web Validation was based on a deprecated JSON Schema API, which is no longer available in {VertX5}.
+
+[source,java]
+----
+// 4.x
+ValidationHandlerBuilder.create(schemaParser)
+
+// 5.0
+SchemaRepository schemaRepo = SchemaRepository.create(new JsonSchemaOptions().setDraft(DRAFT7));
+ValidationHandlerBuilder.create(schemaRepo);
+----
+
+IMPORTANT: To improve security, the new `SchemaRepository` is not automatically loading external references. In case your schema contains an external references you must provide and dereference them upfront.
+

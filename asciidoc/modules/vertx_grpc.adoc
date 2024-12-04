@@ -1,0 +1,28 @@
+= Vert.x gRPC
+
+== Removal of GrpcReadStream#collecting in favour of ReadStream#collect
+
+[source,java]
+----
+// 4.x
+stream.collecting(collector);
+
+// 5.0
+stream.collect(collector);
+----
+
+== Removal of methods declaring a method descriptor
+
+`GrpcClient`/`GrpcServer` methods declaring a `MethodDescriptor` have been removed.
+
+Instead, these methods are now available in `GrpcIoClient`/`GrpcIoServer` interfaces which extend `GrpcClient`/`GrpcServer` interfaces.
+
+[source,java]
+----
+// 4.x
+GrpcServer server = GrpcServer.create(vertx);
+
+// 5.0
+GrpcIoServer server = GrpcIoServer.create(vertx);
+server.callHandler(methodDescriptor, request -> ...);
+----

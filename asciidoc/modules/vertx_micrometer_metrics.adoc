@@ -1,0 +1,35 @@
+= Vert.x Micrometer Metrics
+
+== Upgrade to Micrometer 1.13
+
+Micrometer 1.13 is a breaking change release if you are using the PrometheusMeterRegistry API in your code.
+
+Please take a look at Micrometer's https://github.com/micrometer-metrics/micrometer/wiki/1.13-Migration-Guide[migration guide].
+
+== HTTP client pool metrics
+
+HTTP client pool metrics are now exposed as generic pool metrics with pool type http
+
+- `vertx_http_client_queue_pending` → `vertx_pool_queue_pending`
+- `vertx_http_client_queue_time_seconds` → `vertx_pool_queue_time_seconds`
+
+== Remove setting a registry on options
+
+The micrometer options setter for a `MeterRegistry` has been removed in favour of the new `VertxBuilder` along with the `MicrometerMetricsFactory`.
+
+[source,java]
+----
+// 4.x
+Vertx vertx = Vertx.vertx(new VertxOptions()
+ .setMetricsOptions(new MicrometerMetricsOptions()
+   .setMicrometerRegistry(myRegistry)
+   .setEnabled(true)));
+
+// 5.0
+Vertx vertx = Vertx.builder()
+  .with(new VertxOptions()
+    .setMetricsOptions(new MicrometerMetricsOptions()
+    .setEnabled(true)))
+  .withMetrics(new MicrometerMetricsFactory(myRegistry))
+  .build();
+----

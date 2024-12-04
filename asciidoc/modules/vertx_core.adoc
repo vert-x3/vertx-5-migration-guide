@@ -41,7 +41,45 @@ Vertx vertx = Vertx.vertx(
 Vertx vertx = Vertx
    .builder()
   .withMetrics(factory)
-  .withTracing(factory)
+  .withTracer(factory)
+  .build();
+----
+
+The tracing implementations of {VertX} have been updated accordingly to support customizing with a tracer implementation for this purpose:
+
+.Customizing an instance with an OpenTelemetry instance
+[source,java]
+----
+// 4.x
+Vertx vertx = Vertx.vertx(new VertxOptions()
+    .setTracingOptions(
+      new OpenTelemetryOptions(openTelemetry)
+    )
+  );
+
+// 5.0
+Vertx vertx = Vertx.builder()
+ .withTracer(new OpenTelemetryTracingFactory(openTelemetry))
+ .build();
+----
+
+The metrics implementations of {VertX} have been updated accordingly to support customizing with a metrics implementation for this purpose:
+
+.Customizing an instance with a Dropwizard metrics registry
+[source,java]
+----
+// Before
+Vertx vertx = Vertx.vertx(new VertxOptions()
+ .setMetricsOptions(new DropwizardMetricsOptions()
+   .setMetricsRegistry(myRegistry)
+   .setEnabled(true)));
+
+// After
+Vertx vertx = Vertx.builder()
+  .with(new VertxOptions()
+    .setMetricsOptions(new DropwizardMetricsOptions()
+    .setEnabled(true)))
+  .withMetrics(new DropwizardMetricsFactory(myRegistry))
   .build();
 ----
 

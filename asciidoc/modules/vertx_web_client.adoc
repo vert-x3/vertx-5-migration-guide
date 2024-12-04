@@ -1,0 +1,30 @@
+= Vert.x Web Client
+
+== Response expectation replacement
+
+Vert.x Core introduces a new API to implement expectation checks inspired from the Web Client response expectation feature.
+
+The Vert.x HTTP Client comes with the same set of predefined expectations than the Web Client response expectations, more importantly HTTP client response expectations can be re-used by Web Client.
+
+HTTP response expectations leverages the new `Future#expecting` operation combined with the `HttpResponseExpectation` implementation.
+
+[source,java]
+----
+// 4.x
+client
+  .get(8080, "myserver.mycompany.com", "/some-uri")
+  .expect(ResponsePredicate.SC_SUCCESS)
+  .send()
+  .onSuccess(res -> {
+    // ....
+  });
+
+// 5.0
+client
+  .get(8080, "myserver.mycompany.com", "/some-uri")
+  .send()
+  .expecting(HttpResponseExpectation.SC_SUCCESS)
+  .onSuccess(res -> {
+    // ....
+  });
+----

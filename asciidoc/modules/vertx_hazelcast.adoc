@@ -1,0 +1,7 @@
+= Vert.x Hazelcast
+
+== Upgrade to Hazelcast 5.3
+
+This version includes many security fixes since Hazelcast 4.2.8.
+
+It requires JDK 11 to run, which is now the minimum required version in {VertX5}.
