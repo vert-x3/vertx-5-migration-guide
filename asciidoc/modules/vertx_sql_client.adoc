@@ -1,0 +1,82 @@
+= Vert.x SQL Client
+
+== Client builder
+
+The ``Pool subtypes are not really useful as they don't carry any extra method and are use mainly for statically building pool.
+
+In addition, those static methods are not flexible and are numerous due to overloading.
+
+We are replacing these methods with a new client builder API.
+
+[source,java]
+----
+// 4.x
+PgPool client = PgPool.pool(vertx, connectOptions, poolOptions);
+
+//5.0
+Pool client = PgBuilder.pool()
+  .with(poolOptions)
+  .connectingTo(connectOptions)
+  .using(vertx)
+  .build();
+----
+
+== Connect options
+
+The `SqlConnectOptions` class does not extend anymore `NetClientOptions` class.
+
+`SqlConnectOptions` TLS configuration still happens on this class.
+
+[source,java]
+----
+// 4.x
+// 5.0
+PgConnectOptions options = new PgConnectOptions()
+  .setPort(port)
+  .setHost(host)
+  .setDatabase(database)
+  .setUser(user)
+  .setPassword(password)
+  .setSslOptions(new ClientSSLOptions()
+    .setTrustOptions(new PemTrustOptions().addCertPath(pathToCert))
+  );
+----
+
+`NetClientOptions` can still be passed when building a client thanks to the `ClientBuilder`.
+
+[source,java]
+----
+// 5.0
+Pool pool = PgBuilder.pool()
+      .connectingTo(connectOptions)
+      .with(tcpOptions)
+      .build();
+----
+
+== Pool connect handler
+
+`Pool#connectHandler` method is moved to the new `ClientBuilder`, the handler is set once at build time instead
+of being a mutable field of the pool implementations.
+
+[source,java]
+----
+// 4.x
+pool.connectHandler(connectHandler);
+
+// 5.0
+builder.connectHandler(connectHandler);
+----
+
+== Pool connection provider
+
+`Pool#connectionProvider` method is replaced by a `Supplier<Future<SqlConnectOptions>> builder method.
+
+[source,java]
+----
+// 4.x
+pool.connectionProvider(ctx -> futureOfSqlConnection(ctx));
+
+// 5.0
+builder.connectingTo(() -> futureOfSqlConnectOptions());
+----
+

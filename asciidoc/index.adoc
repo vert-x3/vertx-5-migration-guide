@@ -32,3 +32,5 @@ include::modules/vertx_cli_removal.adoc[leveloffset=+1]
 include::modules/cli_framework_deprecation.adoc[leveloffset=+1]
 
 include::modules/vertx_core.adoc[leveloffset=+1]
+
+include::modules/vertx_sql_client.adoc[leveloffset=+1]
