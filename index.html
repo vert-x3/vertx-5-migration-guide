@@ -553,6 +553,11 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
+<li><a href="#_vert_x_for_kotlin">Vert.x for Kotlin</a>
+<ul class="sectlevel2">
+<li><a href="#_removal_of_await_extension_methods_generation">Removal of await extension methods generation</a></li>
+</ul>
+</li>
 <li><a href="#_vert_x_grpc">Vert.x gRPC</a>
 <ul class="sectlevel2">
 <li><a href="#_removal_of_grpcreadstreamcollecting_in_favour_of_readstreamcollect">Removal of GrpcReadStream#collecting in favour of ReadStream#collect</a></li>
@@ -1540,6 +1545,39 @@ group = ((VertxInternal)vertx).nettyEventLoopGroup();</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_vert_x_for_kotlin">Vert.x for Kotlin</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_removal_of_await_extension_methods_generation">Removal of await extension methods generation</h3>
+<div class="paragraph">
+<p>Vert.x 4.x for Kotlin generates suspending extension methods to facilitate the invocation of Vert.x asynchronous method.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="kotlin">suspend fun HttpServer.listenAwait(port: Int, host: String): HttpServer {
+   return awaitResult {
+     this.listen(port, host, it)
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Such methods have been deprecated since the equivalent can be achieved using a Vert.x future instance and removed
+in Vert.x 5.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="kotlin">// 4.x
+server.listenAwait(port, host)
+
+// 5.0
+server.listen(host, port).coAwait()</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_vert_x_grpc">Vert.x gRPC</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -2054,7 +2092,7 @@ OutputUnit ou = <span class="keyword">new</span> OutputUnit(<span class="string"
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-12-05 04:01:21 UTC
+Last updated 2024-12-05 10:18:07 UTC
 </div>
 </div>
 </body>
