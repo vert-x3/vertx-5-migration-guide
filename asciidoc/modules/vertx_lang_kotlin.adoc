@@ -1,0 +1,26 @@
+= Vert.x for Kotlin
+
+== Removal of await extension methods generation
+
+{VertX} {v4x} for Kotlin generates suspending extension methods to facilitate the invocation of {VertX} asynchronous method.
+
+[source,kotlin]
+----
+suspend fun HttpServer.listenAwait(port: Int, host: String): HttpServer {
+   return awaitResult {
+     this.listen(port, host, it)
+  }
+}
+----
+
+Such methods have been deprecated since the equivalent can be achieved using a {VertX} future instance and removed
+in {VertX5}.
+
+[source,kotlin]
+----
+// 4.x
+server.listenAwait(port, host)
+
+// 5.0
+server.listen(host, port).coAwait()
+----
