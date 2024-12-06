@@ -1,4 +1,4 @@
-= Vert.x Reactive Extensions
+= {VertX} Reactive Extensions
 
 == Data object changes
 

@@ -1,4 +1,4 @@
-= Vertx builders
+= {VertX} builders
 
 {VertX} {v5} has introduced the usage of the builder pattern that facilitate component configuration with instances of objects.
 

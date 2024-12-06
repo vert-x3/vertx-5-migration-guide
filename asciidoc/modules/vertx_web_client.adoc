@@ -1,4 +1,4 @@
-= Vert.x Web Client
+= {VertX} Web Client
 
 == Response expectation replacement
 

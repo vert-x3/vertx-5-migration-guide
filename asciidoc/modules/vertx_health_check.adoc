@@ -1,4 +1,4 @@
-= Vert.x Health Check
+= {VertX} Health Check
 
 == Health checks dependencies improvements
 

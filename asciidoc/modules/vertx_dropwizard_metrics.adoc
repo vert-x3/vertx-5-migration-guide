@@ -1,4 +1,4 @@
-= Vert.x Dropwizard Metrics
+= {VertX} Dropwizard Metrics
 
 == HTTP client pool metrics
 

@@ -1,4 +1,4 @@
-= Vert.x Web Validation
+= {VertX} Web Validation
 
 == Replacement of deprecated SchemaParser
 

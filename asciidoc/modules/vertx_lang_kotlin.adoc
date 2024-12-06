@@ -1,4 +1,4 @@
-= Vert.x for Kotlin
+= {VertX} for Kotlin
 
 == Removal of await extension methods generation
 

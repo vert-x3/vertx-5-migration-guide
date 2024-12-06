@@ -1,4 +1,4 @@
-= Vert.x gRPC
+= {VertX} gRPC
 
 == Removal of GrpcReadStream#collecting in favour of ReadStream#collect
 

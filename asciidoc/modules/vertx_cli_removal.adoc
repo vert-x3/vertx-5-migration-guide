@@ -1,4 +1,4 @@
-= vertx command-line tool removal
+= {VertX} command-line tool removal
 
 The `vertx` command-line tool has been removed in {VertX} {v5}.
 
