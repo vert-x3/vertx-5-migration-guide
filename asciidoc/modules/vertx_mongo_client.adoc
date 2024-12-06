@@ -2,9 +2,8 @@
 
 == Upgrade to MongoDB Java Driver 5
 
-MongoDB Java Driver 5.x is a breaking change release.
+MongoDB Java Driver 5.x is a https://www.mongodb.com/community/forums/t/mongodb-java-driver-5-0-is-released/268913/1[breaking change release].
 
-https://www.mongodb.com/community/forums/t/mongodb-java-driver-5-0-is-released/268913/1
+In `IndexOptions`, `bucketSize` has been removed.
 
-In `IndexOptions`, `bucketSize` has been removed ,
-`StreamFactoryFactory` has been replaced by `TransportSettings`, and Netty is the only available transport.
+Besides, `StreamFactoryFactory` has been replaced by `TransportSettings`, and Netty is the only available transport.
