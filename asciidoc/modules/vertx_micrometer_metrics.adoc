@@ -1,8 +1,8 @@
 = Vert.x Micrometer Metrics
 
-== Upgrade to Micrometer 1.13
+== Upgrade to Micrometer 1.14
 
-Micrometer 1.13 is a breaking change release if you are using the PrometheusMeterRegistry API in your code.
+Micrometer 1.14 comes after 1.13, which a breaking change release if you are using the PrometheusMeterRegistry API in your code.
 
 Please take a look at Micrometer's https://github.com/micrometer-metrics/micrometer/wiki/1.13-Migration-Guide[migration guide].
 
