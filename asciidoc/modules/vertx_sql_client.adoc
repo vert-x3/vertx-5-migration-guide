@@ -1,4 +1,4 @@
-= Vert.x SQL Client
+= {VertX} SQL Client
 
 == Client builder
 

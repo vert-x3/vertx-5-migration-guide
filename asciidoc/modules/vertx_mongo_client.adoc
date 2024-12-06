@@ -1,4 +1,4 @@
-= Vert.x Mongo Client
+= {VertX} Mongo Client
 
 == Upgrade to MongoDB Java Driver 5
 

@@ -1,6 +1,6 @@
-= Vert.x Core
+= {VertX} Core
 
-== Vertx instance customization
+== {VertX} instance customization
 
 An instance of `Vertx` can be customized with a few moving parts:
 

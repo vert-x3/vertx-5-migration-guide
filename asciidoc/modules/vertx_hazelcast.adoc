@@ -1,4 +1,4 @@
-= Vert.x Hazelcast
+= {VertX} Hazelcast
 
 == Upgrade to Hazelcast 5.3
 

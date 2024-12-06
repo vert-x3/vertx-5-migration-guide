@@ -1,4 +1,4 @@
-= Vert.x Web GraphQL
+= {VertX} Web GraphQL
 
 == Upgrade to GraphQL-Java 22
 

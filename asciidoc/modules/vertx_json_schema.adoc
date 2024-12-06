@@ -1,4 +1,4 @@
-= Vert.x Json Schema
+= {VertX} Json Schema
 
 == Deprecated APIs removal
 

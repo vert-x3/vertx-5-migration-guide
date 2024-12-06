@@ -1,4 +1,4 @@
-= Vert.x Micrometer Metrics
+= {VertX} Micrometer Metrics
 
 == Upgrade to Micrometer 1.14
 
