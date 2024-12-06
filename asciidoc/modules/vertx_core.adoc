@@ -372,7 +372,7 @@ A few system properties have been removed in Vert.x 5.
 |Not used, neither documented nor tested.
 
 |`vertx.flashPolicyHandler`
-|{VertX} HTTP/1.1 server contains a hidden option to detect Adobe Flash clients and return a policy file response (http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html). This option is activated by a system property `vertx.flashPolicyHandler` only referenced in source code (private field) and not tested.
+|{VertX} HTTP/1.1 server contains a hidden option to detect Adobe Flash clients and return a policy file response. This option is activated by a system property `vertx.flashPolicyHandler` only referenced in source code (private field) and not tested.
 
 |`vertx.cwd`
 |This system property was not documented and only used in the `vertx-examples` repository.
