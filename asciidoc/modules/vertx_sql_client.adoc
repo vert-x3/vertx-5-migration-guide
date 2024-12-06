@@ -2,7 +2,7 @@
 
 == Client builder
 
-The ``Pool subtypes are not really useful as they don't carry any extra method and are use mainly for statically building pool.
+The `Pool` subtypes are not really useful as they don't carry any extra method and are use mainly for statically building pool.
 
 In addition, those static methods are not flexible and are numerous due to overloading.
 
@@ -69,7 +69,7 @@ builder.connectHandler(connectHandler);
 
 == Pool connection provider
 
-`Pool#connectionProvider` method is replaced by a `Supplier<Future<SqlConnectOptions>> builder method.
+`Pool#connectionProvider` method is replaced by a `Supplier<Future<SqlConnectOptions>>` builder method.
 
 [source,java]
 ----

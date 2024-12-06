@@ -204,7 +204,7 @@ HttpClient client = vertx.createHttpClient(new PoolOptions()
 === Removal of HttpServerResponse close method
 
 The `HttpServerResponse` close method closes the HTTP connection, it can be misleading as there are better API to interact
-with the current request/connection lifecycle which are `HttpServerResponse#reset` and `HttpConnection#close.
+with the current request/connection lifecycle which are `HttpServerResponse#reset` and `HttpConnection#close`.
 
 When the actual HTTP connection must be closed:
 
@@ -363,22 +363,22 @@ A few system properties have been removed in Vert.x 5.
 |Name|Comment
 
 |`vertx.json.base64`
-|Vert.x 3.x Json supports RFC-7493, however the JSON encoder/decoder format was incorrect. Users who needed to interop with Vert.x 3.x applications should have set the system property vertx.json.base64 to legacy
+|Vert.x 3.x Json supports RFC-7493, however the JSON encoder/decoder format was incorrect. Users who needed to interop with Vert.x 3.x applications should have set the system property `vertx.json.base64` to `legacy`.
 
 |`vertx.cluster.managerClass`
-|not used, neither documented nor tested
+|Not used, neither documented nor tested.
 
 |`vertx.javaCompilerOptions`
-|not used, neither documented nor tested
+|Not used, neither documented nor tested.
 
 |`vertx.flashPolicyHandler`
-|{VertX} HTTP/1.1 server contains a hidden option to detect Adobe Flash clients and return a policy file response (http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html). This option is activated by a system property vertx.flashPolicyHandler only referenced in source code (private field) and not tested.
+|{VertX} HTTP/1.1 server contains a hidden option to detect Adobe Flash clients and return a policy file response (http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html). This option is activated by a system property `vertx.flashPolicyHandler` only referenced in source code (private field) and not tested.
 
 |`vertx.cwd`
-|this system property was not documented and only used in vertx-examples repository
+|This system property was not documented and only used in the `vertx-examples` repository.
 
 |`vertx.disableTCCL`
-|instead `VertxOptions#setDisableTCCL(boolean)` should be used
+|Instead, `VertxOptions#setDisableTCCL(boolean)` should be used.
 |===
 
 == Worker verticles
