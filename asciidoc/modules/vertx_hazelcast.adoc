@@ -3,5 +3,8 @@
 == Upgrade to Hazelcast 5.3
 
 This version includes many security fixes since Hazelcast 4.2.8.
-
 It requires JDK 11 to run, which is now the minimum required version in {VertX5}.
+
+The cluster manager is also tested with Hazelcast 5.4 and Hazelcast 5.5.
+But these versions require JDK 17 and JDK 21 as a minimum, respectively.
+Therefore, we cannot use them by default.
