@@ -1,5 +1,5 @@
-= Vert.x Web GraphQL
+= {VertX} Web GraphQL
 
 == Upgrade to GraphQL-Java 22
 
-GraphQL-Java 22 is a breaking change release.
+GraphQL-Java 22 is a https://github.com/graphql-java/graphql-java/releases/tag/v22.0[breaking change release].

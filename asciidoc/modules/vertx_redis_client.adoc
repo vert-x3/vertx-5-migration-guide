@@ -1,4 +1,4 @@
-= Vert.x Redis Client
+= {VertX} Redis Client
 
 == Removal of request null argument
 
