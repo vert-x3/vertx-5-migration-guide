@@ -44,4 +44,7 @@ Here is the list of components removed in {v5}, that were sunset in the {v4x} se
 
 |HTTP Service Factory
 |None
+
+|Vert.x Web OpenAPI
+|https://vertx.io/docs/vertx-web-openapi-router/java/[Vert.x Web OpenAPI Router]
 |===
