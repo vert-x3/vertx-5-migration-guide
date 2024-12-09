@@ -534,9 +534,9 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_handling_deprecations_and_removals">Handling deprecations and removals</a></li>
 <li><a href="#_components_sunsets_and_removals">Components sunsets and removals</a></li>
 <li><a href="#_embracing_the_future_model">Embracing the future model</a></li>
-<li><a href="#_vertx_builders">Vertx builders</a></li>
+<li><a href="#_vert_x_builders">Vert.x builders</a></li>
 <li><a href="#_changes_in_components">Changes in components</a></li>
-<li><a href="#_vertx_command_line_tool_removal">vertx command-line tool removal</a></li>
+<li><a href="#_vert_x_command_line_tool_removal">Vert.x command-line tool removal</a></li>
 <li><a href="#_cli_framework_deprecation">CLI framework deprecation</a>
 <ul class="sectlevel2">
 <li><a href="#_vert_x_legacy_cli">Vert.x Legacy CLI</a></li>
@@ -545,7 +545,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </li>
 <li><a href="#_vert_x_core">Vert.x Core</a>
 <ul class="sectlevel2">
-<li><a href="#_vertx_instance_customization">Vertx instance customization</a></li>
+<li><a href="#_vert_x_instance_customization">Vert.x instance customization</a></li>
 <li><a href="#_http_related_changes">HTTP related changes</a></li>
 <li><a href="#_future">Future</a></li>
 <li><a href="#_system_properties">System properties</a></li>
@@ -604,7 +604,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 </li>
 <li><a href="#_vert_x_micrometer_metrics">Vert.x Micrometer Metrics</a>
 <ul class="sectlevel2">
-<li><a href="#_upgrade_to_micrometer_1_13">Upgrade to Micrometer 1.13</a></li>
+<li><a href="#_upgrade_to_micrometer_1_14">Upgrade to Micrometer 1.14</a></li>
 <li><a href="#_http_client_pool_metrics">HTTP client pool metrics</a></li>
 <li><a href="#_remove_setting_a_registry_on_options">Remove setting a registry on options</a></li>
 </ul>
@@ -813,7 +813,7 @@ methods shall be deprecated in order to facilitate the migration to Vert.x 5.</p
 </div>
 </div>
 <div class="sect1">
-<h2 id="_vertx_builders">Vertx builders</h2>
+<h2 id="_vert_x_builders">Vert.x builders</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Vert.x 5 has introduced the usage of the builder pattern that facilitate component configuration with instances of objects.</p>
@@ -852,7 +852,7 @@ methods shall be deprecated in order to facilitate the migration to Vert.x 5.</p
 </div>
 </div>
 <div class="sect1">
-<h2 id="_vertx_command_line_tool_removal">vertx command-line tool removal</h2>
+<h2 id="_vert_x_command_line_tool_removal">Vert.x command-line tool removal</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The <code>vertx</code> command-line tool has been removed in Vert.x 5.</p>
@@ -945,7 +945,7 @@ java -cp $CLASSPATH io.vertx.launcher.application.VertxApplication my.app.MainVe
 <h2 id="_vert_x_core">Vert.x Core</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_vertx_instance_customization">Vertx instance customization</h3>
+<h3 id="_vert_x_instance_customization">Vert.x instance customization</h3>
 <div class="paragraph">
 <p>An instance of <code>Vertx</code> can be customized with a few moving parts:</p>
 </div>
@@ -1198,7 +1198,7 @@ HttpClient client = vertx.createHttpClient(<span class="keyword">new</span> Pool
 <h4 id="_removal_of_httpserverresponse_close_method">Removal of HttpServerResponse close method</h4>
 <div class="paragraph">
 <p>The <code>HttpServerResponse</code> close method closes the HTTP connection, it can be misleading as there are better API to interact
-with the current request/connection lifecycle which are <code>HttpServerResponse#reset</code> and `HttpConnection#close.</p>
+with the current request/connection lifecycle which are <code>HttpServerResponse#reset</code> and <code>HttpConnection#close</code>.</p>
 </div>
 <div class="paragraph">
 <p>When the actual HTTP connection must be closed:</p>
@@ -1395,27 +1395,27 @@ future.eventually(() -&gt; someFuture());</code></pre>
 <tbody>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.json.base64</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x 3.x Json supports RFC-7493, however the JSON encoder/decoder format was incorrect. Users who needed to interop with Vert.x 3.x applications should have set the system property vertx.json.base64 to legacy</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x 3.x Json supports RFC-7493, however the JSON encoder/decoder format was incorrect. Users who needed to interop with Vert.x 3.x applications should have set the system property <code>vertx.json.base64</code> to <code>legacy</code>.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.cluster.managerClass</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">not used, neither documented nor tested</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not used, neither documented nor tested.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.javaCompilerOptions</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">not used, neither documented nor tested</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Not used, neither documented nor tested.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.flashPolicyHandler</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x HTTP/1.1 server contains a hidden option to detect Adobe Flash clients and return a policy file response (<a href="http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html" class="bare">http://www.adobe.com/devnet/articles/crossdomain_policy_file_spec.html</a>). This option is activated by a system property vertx.flashPolicyHandler only referenced in source code (private field) and not tested.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vert.x HTTP/1.1 server contains a hidden option to detect Adobe Flash clients and return a policy file response. This option is activated by a system property <code>vertx.flashPolicyHandler</code> only referenced in source code (private field) and not tested.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.cwd</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">this system property was not documented and only used in vertx-examples repository</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">This system property was not documented and only used in the <code>vertx-examples</code> repository.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code>vertx.disableTCCL</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">instead <code>VertxOptions#setDisableTCCL(boolean)</code> should be used</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Instead, <code>VertxOptions#setDisableTCCL(boolean)</code> should be used.</p></td>
 </tr>
 </tbody>
 </table>
@@ -1661,7 +1661,7 @@ client
 <div class="sect2">
 <h3 id="_upgrade_to_graphql_java_22">Upgrade to GraphQL-Java 22</h3>
 <div class="paragraph">
-<p>GraphQL-Java 22 is a breaking change release.</p>
+<p>GraphQL-Java 22 is a <a href="https://github.com/graphql-java/graphql-java/releases/tag/v22.0">breaking change release</a>.</p>
 </div>
 </div>
 </div>
@@ -1705,7 +1705,7 @@ To improve security, the new <code>SchemaRepository</code> is not automatically 
 <div class="sect2">
 <h3 id="_client_builder">Client builder</h3>
 <div class="paragraph">
-<p>The ``Pool subtypes are not really useful as they don&#8217;t carry any extra method and are use mainly for statically building pool.</p>
+<p>The <code>Pool</code> subtypes are not really useful as they don&#8217;t carry any extra method and are use mainly for statically building pool.</p>
 </div>
 <div class="paragraph">
 <p>In addition, those static methods are not flexible and are numerous due to overloading.</p>
@@ -1782,7 +1782,7 @@ builder.connectHandler(connectHandler);</code></pre>
 <div class="sect2">
 <h3 id="_pool_connection_provider">Pool connection provider</h3>
 <div class="paragraph">
-<p><code>Pool#connectionProvider</code> method is replaced by a `Supplier&lt;Future&lt;SqlConnectOptions&gt;&gt; builder method.</p>
+<p><code>Pool#connectionProvider</code> method is replaced by a <code>Supplier&lt;Future&lt;SqlConnectOptions&gt;&gt;</code> builder method.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1802,14 +1802,13 @@ builder.connectingTo(() -&gt; futureOfSqlConnectOptions());</code></pre>
 <div class="sect2">
 <h3 id="_upgrade_to_mongodb_java_driver_5">Upgrade to MongoDB Java Driver 5</h3>
 <div class="paragraph">
-<p>MongoDB Java Driver 5.x is a breaking change release.</p>
+<p>MongoDB Java Driver 5.x is a <a href="https://www.mongodb.com/community/forums/t/mongodb-java-driver-5-0-is-released/268913/1">breaking change release</a>.</p>
 </div>
 <div class="paragraph">
-<p><a href="https://www.mongodb.com/community/forums/t/mongodb-java-driver-5-0-is-released/268913/1" class="bare">https://www.mongodb.com/community/forums/t/mongodb-java-driver-5-0-is-released/268913/1</a></p>
+<p>In <code>IndexOptions</code>, <code>bucketSize</code> has been removed.</p>
 </div>
 <div class="paragraph">
-<p>In <code>IndexOptions</code>, <code>bucketSize</code> has been removed ,
-<code>StreamFactoryFactory</code> has been replaced by <code>TransportSettings</code>, and Netty is the only available transport.</p>
+<p>Besides, <code>StreamFactoryFactory</code> has been replaced by <code>TransportSettings</code>, and Netty is the only available transport.</p>
 </div>
 </div>
 </div>
@@ -1937,9 +1936,9 @@ stream.write(io.vertx.core.buffer.Buffer.buffer(<span class="string"><span class
 <h2 id="_vert_x_micrometer_metrics">Vert.x Micrometer Metrics</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_upgrade_to_micrometer_1_13">Upgrade to Micrometer 1.13</h3>
+<h3 id="_upgrade_to_micrometer_1_14">Upgrade to Micrometer 1.14</h3>
 <div class="paragraph">
-<p>Micrometer 1.13 is a breaking change release if you are using the PrometheusMeterRegistry API in your code.</p>
+<p>Micrometer 1.14 comes after 1.13, which a breaking change release if you are using the PrometheusMeterRegistry API in your code.</p>
 </div>
 <div class="paragraph">
 <p>Please take a look at Micrometer&#8217;s <a href="https://github.com/micrometer-metrics/micrometer/wiki/1.13-Migration-Guide">migration guide</a>.</p>
@@ -2085,10 +2084,13 @@ OutputUnit ou = <span class="keyword">new</span> OutputUnit(<span class="string"
 <div class="sect2">
 <h3 id="_upgrade_to_hazelcast_5_3">Upgrade to Hazelcast 5.3</h3>
 <div class="paragraph">
-<p>This version includes many security fixes since Hazelcast 4.2.8.</p>
+<p>This version includes many security fixes since Hazelcast 4.2.8.
+It requires JDK 11 to run, which is now the minimum required version in Vert.x 5.</p>
 </div>
 <div class="paragraph">
-<p>It requires JDK 11 to run, which is now the minimum required version in Vert.x 5.</p>
+<p>The cluster manager is also tested with Hazelcast 5.4 and Hazelcast 5.5.
+But these versions require JDK 17 and JDK 21 as a minimum, respectively.
+Therefore, we cannot use them by default.</p>
 </div>
 </div>
 </div>
@@ -2096,7 +2098,7 @@ OutputUnit ou = <span class="keyword">new</span> OutputUnit(<span class="string"
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-12-09 08:37:25 UTC
+Last updated 2024-12-09 09:21:54 UTC
 </div>
 </div>
 </body>
