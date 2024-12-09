@@ -592,6 +592,14 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_upgrade_to_mongodb_java_driver_5">Upgrade to MongoDB Java Driver 5</a></li>
 </ul>
 </li>
+<li><a href="#_vert_x_redis_client">Vert.x Redis Client</a>
+<ul class="sectlevel2">
+<li><a href="#_removal_of_request_null_argument">Removal of request null argument</a></li>
+<li><a href="#_automatic_forwarding_of_redis_subscriptions_to_the_vert_x_event_bus">Automatic forwarding of Redis subscriptions to the Vert.x event bus</a></li>
+<li><a href="#_rediscluster_groupbynodes_changed_return_type_code_generation_changes">RedisCluster.groupByNodes() changed return type + code generation changes</a></li>
+<li><a href="#_json_serializationdeserialization_of_redisoptions">JSON serialization/deserialization of RedisOptions</a></li>
+</ul>
+</li>
 <li><a href="#_vert_x_health_check">Vert.x Health Check</a>
 <ul class="sectlevel2">
 <li><a href="#_health_checks_dependencies_improvements">Health checks dependencies improvements</a></li>
@@ -1814,6 +1822,79 @@ builder.connectingTo(() -&gt; futureOfSqlConnectOptions());</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_vert_x_redis_client">Vert.x Redis Client</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_removal_of_request_null_argument">Removal of request null argument</h3>
+<div class="paragraph">
+<p>Redis does not accept <code>null</code> values in the request. The <code>Request#nullArg()</code> method therefore encoded <code>null</code> as the 4-character <code>"null"</code> string.</p>
+</div>
+<div class="paragraph">
+<p>This method, which was deprecated in 4.x, is removed. All places that used it to encode the <code>null</code> value now throw an <code>IllegalArgumentException</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you use <code>null</code> values in Redis requests, you should stop doing that. To restore previous behavior, you should encode <code>null</code> values as <code>"null"</code> manually. This applies to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Request.arg(String)</code></p>
+</li>
+<li>
+<p><code>Request.arg(Buffer)</code></p>
+</li>
+<li>
+<p><code>Request.arg(JsonArray)</code>: both the array itself, and individual elements</p>
+</li>
+<li>
+<p><code>Request.arg(JsonObject)</code>: both the object itself, and individual elements</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_automatic_forwarding_of_redis_subscriptions_to_the_vert_x_event_bus">Automatic forwarding of Redis subscriptions to the Vert.x event bus</h3>
+<div class="paragraph">
+<p>In Vert.x 4.x, the Redis subscriptions were automatically forwarded to the event bus, unless the message handler was set explicitly (using <code>RedisConnection.handler()</code>).</p>
+</div>
+<div class="paragraph">
+<p>This is no longer the case. Since Vert.x 5, you always have to register a message handler. If you still want the subscription messages forwarded to the event bus, you have to manually create an instance of <code>EventBusHandler</code> and register it using <code>RedisConnection.handler()</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">RedisConnection conn = ...;
+conn.handler(EventBusHandler.create(vertx));
+conn.send(Request.cmd(Command.SUBSCRIBE).arg(<span class="string"><span class="delimiter">&quot;</span><span class="content">news</span><span class="delimiter">&quot;</span></span>));</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, the <code>EventBusHandler</code> does not forward only messages (<code>[p]message</code>); it also forwards subscriptions and un-subscriptions (<code>[p]subscribe</code> and <code>[p]unsubscribe</code>).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_rediscluster_groupbynodes_changed_return_type_code_generation_changes">RedisCluster.groupByNodes() changed return type + code generation changes</h3>
+<div class="paragraph">
+<p>The <code>RedisCluster#groupByNodes()</code> method used to return <code>Future&lt;List&lt;List&lt;Request&gt;&gt;&gt;</code>. Due to this return type, the <code>RedisCluster</code> wasn&#8217;t <code>@VertxGen</code>.</p>
+</div>
+<div class="paragraph">
+<p>This has changed in Vert.x 5. The <code>groupByNodes()</code> method now returns <code>Future&lt;RequestGrouping&gt;</code> and the entire interface is <code>@VertxGen</code>.</p>
+</div>
+<div class="paragraph">
+<p>Further, the <code>Request</code>, <code>Response</code> and <code>Command</code> interfaces are no longer <code>@VertxGen</code>&#8201;&#8212;&#8201;instead, they are <code>@DataObject</code>. This means that users of code-generated APIs (such as Vert.x Rx) will no longer use the generated wrappers; they will use the core Vert.x Redis interfaces.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_json_serializationdeserialization_of_redisoptions">JSON serialization/deserialization of RedisOptions</h3>
+<div class="paragraph">
+<p>The <code>RedisOptions</code> class has multiple methods to configure the Redis endpoints. These methods are still available, but the JSON format of this class has changed to only include one canonical field: <code>endpoints</code>.</p>
+</div>
+<div class="paragraph">
+<p>If you rely on the JSON form of <code>RedisOptions</code> objects, note that the <code>endpoint</code>, <code>connectionString</code> and <code>connectionStrings</code> members of the JSON object are no longer recognized by the deserializer and are no longer generated by the serializer. Ensure that the necessary information is present in the <code>endpoints</code> member.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_vert_x_health_check">Vert.x Health Check</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -2098,7 +2179,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-12-09 09:23:43 UTC
+Last updated 2024-12-09 10:23:14 UTC
 </div>
 </div>
 </body>
