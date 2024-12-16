@@ -355,6 +355,15 @@ future.eventually(v -> someFuture());
 future.eventually(() -> someFuture());
 ----
 
+== Logging
+
+{VertX} Logging API usage has been reduced in Vert.x 4 to be used by {VertX} components, in other words
+the API has become internal to {VertX}:
+
+`io.vertx.core.logging.Logger` and  `io.vertx.core.logging.LoggerFactory` have been deprecated to discourage usage of this API. Instead, a logging API should be used such as https://logging.apache.org/log4j/2.12.x/[Log4j 2] or https://www.slf4j.org[SLF4J].
+
+Of course, configuration of the {VertX} logging back-end remains fully supported as usual, like the `vertx.logger-delegate-factory-class-name` system property.
+
 == System properties
 
 A few system properties have been removed in Vert.x 5.
