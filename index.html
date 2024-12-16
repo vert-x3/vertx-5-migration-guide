@@ -548,9 +548,15 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_vert_x_instance_customization">Vert.x instance customization</a></li>
 <li><a href="#_http_related_changes">HTTP related changes</a></li>
 <li><a href="#_future">Future</a></li>
+<li><a href="#_logging">Logging</a></li>
 <li><a href="#_system_properties">System properties</a></li>
 <li><a href="#_worker_verticles">Worker verticles</a></li>
 <li><a href="#_miscellaneous">Miscellaneous</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_auth">Vert.x Auth</a>
+<ul class="sectlevel2">
+<li><a href="#_authprovider_pruning">AuthProvider pruning</a></li>
 </ul>
 </li>
 <li><a href="#_vert_x_for_kotlin">Vert.x for Kotlin</a>
@@ -562,6 +568,12 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <ul class="sectlevel2">
 <li><a href="#_removal_of_grpcreadstreamcollecting_in_favour_of_readstreamcollect">Removal of GrpcReadStream#collecting in favour of ReadStream#collect</a></li>
 <li><a href="#_removal_of_methods_declaring_a_method_descriptor">Removal of methods declaring a method descriptor</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_web">Vert.x Web</a>
+<ul class="sectlevel2">
+<li><a href="#_routingcontext_user_api">RoutingContext user API</a></li>
+<li><a href="#_static_handler_configuration">Static handler configuration</a></li>
 </ul>
 </li>
 <li><a href="#_vert_x_web_client">Vert.x Web Client</a>
@@ -1385,6 +1397,19 @@ future.eventually(() -&gt; someFuture());</code></pre>
 </div>
 </div>
 <div class="sect2">
+<h3 id="_logging">Logging</h3>
+<div class="paragraph">
+<p>Vert.x Logging API usage has been reduced in Vert.x 4 to be used by Vert.x components, in other words
+the API has become internal to Vert.x:</p>
+</div>
+<div class="paragraph">
+<p><code>io.vertx.core.logging.Logger</code> and  <code>io.vertx.core.logging.LoggerFactory</code> have been deprecated to discourage usage of this API. Instead, a logging API should be used such as <a href="https://logging.apache.org/log4j/2.12.x/">Log4j 2</a> or <a href="https://www.slf4j.org">SLF4J</a>.</p>
+</div>
+<div class="paragraph">
+<p>Of course, configuration of the Vert.x logging back-end remains fully supported as usual, like the <code>vertx.logger-delegate-factory-class-name</code> system property.</p>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_system_properties">System properties</h3>
 <div class="paragraph">
 <p>A few system properties have been removed in Vert.x 5.</p>
@@ -1557,6 +1582,26 @@ group = ((VertxInternal)vertx).nettyEventLoopGroup();</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_vert_x_auth">Vert.x Auth</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_authprovider_pruning">AuthProvider pruning</h3>
+<div class="paragraph">
+<p>io.vertx.ext.auth.AuthProvider` has been deprecated in Vert.x 4.0 in favour of <code>io.vertx.ext.auth.authentication.AuthenticationProvider</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="predefined-type">AuthProvider</span> authProvider = ...
+
+<span class="comment">// 5.0</span>
+AuthenticationProvider authProvider = ...</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_vert_x_for_kotlin">Vert.x for Kotlin</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -1620,6 +1665,57 @@ GrpcServer server = GrpcServer.create(vertx);
 <span class="comment">// 5.0</span>
 GrpcIoServer server = GrpcIoServer.create(vertx);
 server.callHandler(methodDescriptor, request -&gt; ...);</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_web">Vert.x Web</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_routingcontext_user_api">RoutingContext user API</h3>
+<div class="paragraph">
+<p>User related operations have been moved under a single context API accessible from <code>RoutingContext</code></p>
+</div>
+<div class="sect3">
+<h4 id="_logout">Logout</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+routingContext.clearUser();
+
+<span class="comment">// 5.0</span>
+UserContext userContext = routingContext.userContext();
+userContext.logout();</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_setting_a_user">Setting a user</h4>
+<div class="paragraph">
+<p>The <code>RoutingContext#setUser</code> method has been removed, this operation should be performed by authentication handlers instead.</p>
+</div>
+<div class="paragraph">
+<p><code>StaticHandler</code> methods <code>setAllowRootFileSystemAccess</code> and <code>setWebRoot</code> are removed after deprecation in Vert.x 4.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_static_handler_configuration">Static handler configuration</h3>
+<div class="paragraph">
+<p><code>StaticHandler</code> methods <code>setAllowRootFileSystemAccess</code> and <code>setWebRoot</code> are removed after deprecation in Vert.x 4.x.</p>
+</div>
+<div class="paragraph">
+<p>Instead, the handler must be configured at creation time:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+StaticHandler handler = StaticHandler.create().setAllowRootFileSystemAccess(<span class="predefined-constant">true</span>).setWebRoot(root);
+
+<span class="comment">// 5.0</span>
+StaticHandler handler = StaticHandler.create(FileSystemAccess.ROOT, root);</code></pre>
 </div>
 </div>
 </div>
@@ -2179,7 +2275,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-12-16 14:11:26 UTC
+Last updated 2024-12-16 14:33:48 UTC
 </div>
 </div>
 </body>
