@@ -1,0 +1,21 @@
+= {VertX} Web
+
+== RoutingContext user API
+
+User related operations have been moved under a single context API accessible from `RoutingContext`
+
+=== Logout
+
+[source,java]
+----
+// 4.x
+routingContext.clearUser();
+
+// 5.0
+UserContext userContext = routingContext.userContext();
+userContext.logout();
+----
+
+=== Setting a user
+
+The `RoutingContext#setUser` method has been removed, this operation should be performed by authentication handlers instead.
