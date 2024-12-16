@@ -33,6 +33,8 @@ include::modules/cli_framework_deprecation.adoc[leveloffset=+1]
 
 include::modules/vertx_core.adoc[leveloffset=+1]
 
+include::modules/vertx_auth.adoc[leveloffset=+1]
+
 include::modules/vertx_lang_kotlin.adoc[leveloffset=+1]
 
 include::modules/vertx_grpc.adoc[leveloffset=+1]

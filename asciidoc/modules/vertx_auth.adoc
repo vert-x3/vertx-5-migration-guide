@@ -1,0 +1,14 @@
+= {VertX} Auth
+
+== AuthProvider pruning
+
+io.vertx.ext.auth.AuthProvider` has been deprecated in Vert.x 4.0 in favour of `io.vertx.ext.auth.authentication.AuthenticationProvider`.
+
+[source,java]
+----
+// 4.x
+AuthProvider authProvider = ...
+
+// 5.0
+AuthenticationProvider authProvider = ...
+----
