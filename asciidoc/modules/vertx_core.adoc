@@ -68,13 +68,13 @@ The metrics implementations of {VertX} have been updated accordingly to support 
 .Customizing an instance with a Dropwizard metrics registry
 [source,java]
 ----
-// Before
+// 4.x
 Vertx vertx = Vertx.vertx(new VertxOptions()
  .setMetricsOptions(new DropwizardMetricsOptions()
    .setMetricsRegistry(myRegistry)
    .setEnabled(true)));
 
-// After
+// 5.0
 Vertx vertx = Vertx.builder()
   .with(new VertxOptions()
     .setMetricsOptions(new DropwizardMetricsOptions()
