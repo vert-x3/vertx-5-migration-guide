@@ -39,3 +39,10 @@ OutputUnit ou = new OutputUnit("instanceLocation", "absoluteKeywordLocation", "k
 OutputUnit ou = new OutputUnit("instanceLocation", "absoluteKeywordLocation", "keywordLocation", "error", OutputErrorType.INVALID_VALUE);
 ----
 
+== Removal of SchemaType INT constant
+
+Instead, use `SchemaType#INTEGER`.
+
+== Remove of ValidationException createException methods
+
+Instead, use the same signature `ValidationException#create` replacements.

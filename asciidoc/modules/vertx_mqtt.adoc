@@ -1,0 +1,16 @@
+= {VertX} MQTT
+
+== Client options will message string getter/setter deprecated removal
+
+Client options _will_ message _string_ getter/setter have been removed after deprecation in {v4x}.
+
+Instead, the `Buffer` version should be used
+
+[source,java]
+----
+// 4.x
+options.setWillMessage(str);
+
+// 5.0
+options.setWillMessageBytes(Buffer.buffer(str));
+----

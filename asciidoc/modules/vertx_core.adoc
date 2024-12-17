@@ -104,6 +104,32 @@ connection.shutdown(5 * 1000); // 5 seconds
 connection.shutdown(5, TimeUnit.SECONDS); // 5 seconds
 ----
 
+=== Removal of HTTP server response push with a string authority
+
+`HttpServerResponse#push` methods with a string _authority_ have been removed in favour of the same method with an `HostAndPort` type instead.
+
+[source,java]
+----
+// 4.x
+response.push(httpMethod, authorityAsString path);
+
+// 5.0
+response.push(httpMethod, HostAndPort.parse(authorityAsString) path);
+----
+
+=== Removal of HTTP server request cookie map method
+
+The deprecated `HttpServerRequest#cookieMap` method has been removed, instead the `HttpServerRequest#cookies` method should be used.
+
+[source,java]
+----
+// 4.x
+Map<String, Cookie> cookieMap = request.cookieMap();
+
+// 5.0
+Set<Cookie> cookies = request.cookies();
+----
+
 === Use of uniform byte distributor for HTTP/2 streams
 
 The default stream byte distributor use stream priorities to determine the amount of bytes to be sent for each stream, this change allows to use a strategy that does not use stream priorities and yields better performance since it consumes less CPU.

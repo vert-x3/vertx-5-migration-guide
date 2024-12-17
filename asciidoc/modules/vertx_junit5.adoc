@@ -1,0 +1,14 @@
+= {VertX} JUnit 5
+
+== Remove deprecated test context succeeding
+
+Instead, use `succeedingThenComplete()` or `succeeding(Handler)`.
+
+[source,java]
+----
+// 4.x
+someFuture.onComplete(testContext.succeeding());
+
+// 5.0
+someFuture.onComplete(testContex.succeedingThenComplete());
+----

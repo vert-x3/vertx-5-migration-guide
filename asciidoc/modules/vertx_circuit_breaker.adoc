@@ -1,0 +1,16 @@
+= {VertX} Circuit Breaker
+
+== Remove deprecated for removal retry policy
+
+The circuit breaker retry policy with a Java function argument has been removed after deprecation in {v4x}.
+
+Instead, the `RetryPolicy` functional interface should be used.
+
+[source,java]
+----
+// 4.x
+breaker.retryPolicy(retryCount -> 5);
+
+// 5.0
+breaker.retryPolicy((failure, retryCount) -> 5);
+----

@@ -33,3 +33,28 @@ Vertx vertx = Vertx.builder()
   .withMetrics(new MicrometerMetricsFactory(myRegistry))
   .build();
 ----
+
+== Remove InfluxDB options number of threads
+
+`VertxInfluxDbOptions#getNumThreads` and `VertxInfluxDbOptions#setNumThreads` are no longer used.
+
+[source,java]
+----
+// 4.x
+influxDbOptions.setNumThreads(numThreads);
+
+// 5.0
+----
+
+== Rename metrics options request tag provider
+
+`VertxMicrometerMetricsOptions#setRequestTagsProvider` and `VertxMicrometerMetricsOptions#getRequestTagsProvider` are removed in favour of `VertxMicrometerMetricsOptions#setServerRequestTagsProvider` and `VertxMicrometerMetricsOptions#getServerRequestTagsProvider`.
+
+[source,java]
+----
+// 4.x
+options.setRequestsTagsProvider(provider);
+
+// 5.0
+options.setServerRequestsTagsProvider(provider);
+----

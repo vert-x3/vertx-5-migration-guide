@@ -55,6 +55,16 @@ include::modules/vertx_redis_client.adoc[leveloffset=+1]
 
 include::modules/vertx_health_check.adoc[leveloffset=+1]
 
+include::modules/vertx_circuit_breaker.adoc[leveloffset=+1]
+
+include::modules/vertx_mqtt.adoc[leveloffset=+1]
+
+include::modules/vertx_mail_client.adoc[leveloffset=+1]
+
+include::modules/vertx_junit5.adoc[leveloffset=+1]
+
+include::modules/vertx_service_proxy.adoc[leveloffset=+1]
+
 include::modules/vertx_rx.adoc[leveloffset=+1]
 
 include::modules/vertx_micrometer_metrics.adoc[leveloffset=+1]

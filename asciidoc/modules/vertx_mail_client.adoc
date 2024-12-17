@@ -1,0 +1,17 @@
+= {VertX} Mail Client
+
+== Remove deprecated MailConfig setKeyStore/setKeyStorePassword
+
+Remove deprecated `MailConfig#setKeyStore` and `MailConfig#setKeyStorePassword` properties.
+
+Instead, use MailConfig#setTrustOptions.
+
+[source,java]
+----
+// 4.x
+options.setKeyStore(trustStorePath);
+options.setKeyStorePassword(trustStorePassword);
+
+// 5.0
+options.setTrustOptions(new JksOptions().setPath(trustStorePath).setPassword(trustStorePassword));
+----

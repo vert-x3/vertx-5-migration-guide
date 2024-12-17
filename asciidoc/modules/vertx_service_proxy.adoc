@@ -1,0 +1,50 @@
+= {VertX} Service Proxy
+
+== ServiceAuthInterceptor removal
+
+Instead, use `AuthorizationInterceptor`.
+
+[source,java]
+----
+// 4.x
+new ServiceBinder(vertx)
+   .addInterceptor(new ServiceAuthInterceptor()...)
+   .register(SomeService.class, service);
+
+// 5.0
+new ServiceBinder(vertx)
+   .addInterceptor(AuthorizationInterceptor.create(authorizationProvider)...)
+   .register(SomeService.class, service);
+----
+
+== ServiceBinder functionnal interceptor
+
+The `ServiceBinder#addInterceptor(Function)` and `ServiceBinder#addInterceptor(String, Function)` have been removed in favor of the variant with the `ServiceInterceptor` functional interface.
+
+[source,java]
+----
+// 4.x
+binder.addInterceptor(msg -> vertx.timer(10, TimeUnit.MILLISECONDS).map(msg));
+
+// 5.0
+binder.addInterceptor((vertx, interceptorContext, body) -> vertx.timer(10, TimeUnit.MILLISECONDS).map(body));
+----
+
+== Removal of ProxyHelper util class
+
+The `ProxyHelper` util class is removed in favor of `ServiceProxyBuilder` / `ServiceBinder` equivalents.
+
+[source,java]
+----
+// 4.x
+ProxyHelper.registerService(MyService.class, vertx, service, "the-address");
+MyService proxy = ProxyHelper.createProxy(MyService.class, vertx, "the-address");
+
+// 5.0
+new ServiceBinder(vertx)
+  .setAddress("the-address")
+  .register(MyService.class, service);
+MyService proxy = new ServiceProxyBuilder(vertx)
+  .setAddress("the-address")
+  .build(MyService.class)
+----
