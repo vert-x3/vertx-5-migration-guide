@@ -610,11 +610,39 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_automatic_forwarding_of_redis_subscriptions_to_the_vert_x_event_bus">Automatic forwarding of Redis subscriptions to the Vert.x event bus</a></li>
 <li><a href="#_rediscluster_groupbynodes_changed_return_type_code_generation_changes">RedisCluster.groupByNodes() changed return type + code generation changes</a></li>
 <li><a href="#_json_serializationdeserialization_of_redisoptions">JSON serialization/deserialization of RedisOptions</a></li>
+<li><a href="#_options_addendpointsetendpoint_replacements">Options addEndpoint/setEndpoint replacements</a></li>
 </ul>
 </li>
 <li><a href="#_vert_x_health_check">Vert.x Health Check</a>
 <ul class="sectlevel2">
 <li><a href="#_health_checks_dependencies_improvements">Health checks dependencies improvements</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_circuit_breaker">Vert.x Circuit Breaker</a>
+<ul class="sectlevel2">
+<li><a href="#_remove_deprecated_for_removal_retry_policy">Remove deprecated for removal retry policy</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_mqtt">Vert.x MQTT</a>
+<ul class="sectlevel2">
+<li><a href="#_client_options_will_message_string_gettersetter_deprecated_removal">Client options will message string getter/setter deprecated removal</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_mail_client">Vert.x Mail Client</a>
+<ul class="sectlevel2">
+<li><a href="#_remove_deprecated_mailconfig_setkeystoresetkeystorepassword">Remove deprecated MailConfig setKeyStore/setKeyStorePassword</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_junit_5">Vert.x JUnit 5</a>
+<ul class="sectlevel2">
+<li><a href="#_remove_deprecated_test_context_succeeding">Remove deprecated test context succeeding</a></li>
+</ul>
+</li>
+<li><a href="#_vert_x_service_proxy">Vert.x Service Proxy</a>
+<ul class="sectlevel2">
+<li><a href="#_serviceauthinterceptor_removal">ServiceAuthInterceptor removal</a></li>
+<li><a href="#_servicebinder_functionnal_interceptor">ServiceBinder functionnal interceptor</a></li>
+<li><a href="#_removal_of_proxyhelper_util_class">Removal of ProxyHelper util class</a></li>
 </ul>
 </li>
 <li><a href="#_vert_x_reactive_extensions">Vert.x Reactive Extensions</a>
@@ -627,6 +655,8 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_upgrade_to_micrometer_1_14">Upgrade to Micrometer 1.14</a></li>
 <li><a href="#_http_client_pool_metrics">HTTP client pool metrics</a></li>
 <li><a href="#_remove_setting_a_registry_on_options">Remove setting a registry on options</a></li>
+<li><a href="#_remove_influxdb_options_number_of_threads">Remove InfluxDB options number of threads</a></li>
+<li><a href="#_rename_metrics_options_request_tag_provider">Rename metrics options request tag provider</a></li>
 </ul>
 </li>
 <li><a href="#_vert_x_dropwizard_metrics">Vert.x Dropwizard Metrics</a>
@@ -639,6 +669,8 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <ul class="sectlevel2">
 <li><a href="#_deprecated_apis_removal">Deprecated APIs removal</a></li>
 <li><a href="#_additional_error_types">Additional Error Types</a></li>
+<li><a href="#_removal_of_schematype_int_constant">Removal of SchemaType INT constant</a></li>
+<li><a href="#_remove_of_validationexception_createexception_methods">Remove of ValidationException createException methods</a></li>
 </ul>
 </li>
 <li><a href="#_vert_x_hazelcast">Vert.x Hazelcast</a>
@@ -1046,13 +1078,13 @@ Vertx vertx = Vertx.builder()
 <div class="listingblock">
 <div class="title">Customizing an instance with a Dropwizard metrics registry</div>
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// Before</span>
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
 Vertx vertx = Vertx.vertx(<span class="keyword">new</span> VertxOptions()
  .setMetricsOptions(<span class="keyword">new</span> DropwizardMetricsOptions()
    .setMetricsRegistry(myRegistry)
    .setEnabled(<span class="predefined-constant">true</span>)));
 
-<span class="comment">// After</span>
+<span class="comment">// 5.0</span>
 Vertx vertx = Vertx.builder()
   .with(<span class="keyword">new</span> VertxOptions()
     .setMetricsOptions(<span class="keyword">new</span> DropwizardMetricsOptions()
@@ -1085,6 +1117,36 @@ connection.shutdown(<span class="integer">5</span> * <span class="integer">1000<
 
 <span class="comment">// 5.0</span>
 connection.shutdown(<span class="integer">5</span>, <span class="predefined-type">TimeUnit</span>.SECONDS); <span class="comment">// 5 seconds</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_http_server_response_push_with_a_string_authority">Removal of HTTP server response push with a string authority</h4>
+<div class="paragraph">
+<p><code>HttpServerResponse#push</code> methods with a string <em>authority</em> have been removed in favour of the same method with an <code>HostAndPort</code> type instead.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+response.push(httpMethod, authorityAsString path);
+
+<span class="comment">// 5.0</span>
+response.push(httpMethod, HostAndPort.parse(authorityAsString) path);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_removal_of_http_server_request_cookie_map_method">Removal of HTTP server request cookie map method</h4>
+<div class="paragraph">
+<p>The deprecated <code>HttpServerRequest#cookieMap</code> method has been removed, instead the <code>HttpServerRequest#cookies</code> method should be used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, Cookie&gt; cookieMap = request.cookieMap();
+
+<span class="comment">// 5.0</span>
+<span class="predefined-type">Set</span>&lt;Cookie&gt; cookies = request.cookies();</code></pre>
 </div>
 </div>
 </div>
@@ -1985,6 +2047,21 @@ conn.send(Request.cmd(Command.SUBSCRIBE).arg(<span class="string"><span class="d
 <p>If you rely on the JSON form of <code>RedisOptions</code> objects, note that the <code>endpoint</code>, <code>connectionString</code> and <code>connectionStrings</code> members of the JSON object are no longer recognized by the deserializer and are no longer generated by the serializer. Ensure that the necessary information is present in the <code>endpoints</code> member.</p>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_options_addendpointsetendpoint_replacements">Options addEndpoint/setEndpoint replacements</h3>
+<div class="paragraph">
+<p><code>RedisOptions#addEndpoint</code> and <code>RedisOptions#setEndpoint</code> are replaced by <code>RedisOptions#addConnectionString</code> and <code>RedisOptions#setConnectionString</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+options.setEndpoint(location);
+
+<span class="comment">// 4.x</span>
+options.setConnectionString(location);</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2005,6 +2082,156 @@ conn.send(Request.cmd(Command.SUBSCRIBE).arg(<span class="string"><span class="d
 
 <span class="comment">// 5.0</span>
 <span class="keyword">import</span> <span class="include">io.vertx.ext.web.healthchecks.HealthCheckHandler</span>;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_circuit_breaker">Vert.x Circuit Breaker</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_remove_deprecated_for_removal_retry_policy">Remove deprecated for removal retry policy</h3>
+<div class="paragraph">
+<p>The circuit breaker retry policy with a Java function argument has been removed after deprecation in 4.x.</p>
+</div>
+<div class="paragraph">
+<p>Instead, the <code>RetryPolicy</code> functional interface should be used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+breaker.retryPolicy(retryCount -&gt; <span class="integer">5</span>);
+
+<span class="comment">// 5.0</span>
+breaker.retryPolicy((failure, retryCount) -&gt; <span class="integer">5</span>);</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_mqtt">Vert.x MQTT</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_client_options_will_message_string_gettersetter_deprecated_removal">Client options will message string getter/setter deprecated removal</h3>
+<div class="paragraph">
+<p>Client options <em>will</em> message <em>string</em> getter/setter have been removed after deprecation in 4.x.</p>
+</div>
+<div class="paragraph">
+<p>Instead, the <code>Buffer</code> version should be used</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+options.setWillMessage(str);
+
+<span class="comment">// 5.0</span>
+options.setWillMessageBytes(<span class="predefined-type">Buffer</span>.buffer(str));</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_mail_client">Vert.x Mail Client</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_remove_deprecated_mailconfig_setkeystoresetkeystorepassword">Remove deprecated MailConfig setKeyStore/setKeyStorePassword</h3>
+<div class="paragraph">
+<p>Remove deprecated <code>MailConfig#setKeyStore</code> and <code>MailConfig#setKeyStorePassword</code> properties.</p>
+</div>
+<div class="paragraph">
+<p>Instead, use MailConfig#setTrustOptions.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+options.setKeyStore(trustStorePath);
+options.setKeyStorePassword(trustStorePassword);
+
+<span class="comment">// 5.0</span>
+options.setTrustOptions(<span class="keyword">new</span> JksOptions().setPath(trustStorePath).setPassword(trustStorePassword));</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_junit_5">Vert.x JUnit 5</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_remove_deprecated_test_context_succeeding">Remove deprecated test context succeeding</h3>
+<div class="paragraph">
+<p>Instead, use <code>succeedingThenComplete()</code> or <code>succeeding(Handler)</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+someFuture.onComplete(testContext.succeeding());
+
+<span class="comment">// 5.0</span>
+someFuture.onComplete(testContex.succeedingThenComplete());</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vert_x_service_proxy">Vert.x Service Proxy</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_serviceauthinterceptor_removal">ServiceAuthInterceptor removal</h3>
+<div class="paragraph">
+<p>Instead, use <code>AuthorizationInterceptor</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="keyword">new</span> ServiceBinder(vertx)
+   .addInterceptor(<span class="keyword">new</span> ServiceAuthInterceptor()...)
+   .register(SomeService.class, service);
+
+<span class="comment">// 5.0</span>
+<span class="keyword">new</span> ServiceBinder(vertx)
+   .addInterceptor(AuthorizationInterceptor.create(authorizationProvider)...)
+   .register(SomeService.class, service);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_servicebinder_functionnal_interceptor">ServiceBinder functionnal interceptor</h3>
+<div class="paragraph">
+<p>The <code>ServiceBinder#addInterceptor(Function)</code> and <code>ServiceBinder#addInterceptor(String, Function)</code> have been removed in favor of the variant with the <code>ServiceInterceptor</code> functional interface.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+binder.addInterceptor(msg -&gt; vertx.timer(<span class="integer">10</span>, <span class="predefined-type">TimeUnit</span>.MILLISECONDS).map(msg));
+
+<span class="comment">// 5.0</span>
+binder.addInterceptor((vertx, interceptorContext, body) -&gt; vertx.timer(<span class="integer">10</span>, <span class="predefined-type">TimeUnit</span>.MILLISECONDS).map(body));</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_removal_of_proxyhelper_util_class">Removal of ProxyHelper util class</h3>
+<div class="paragraph">
+<p>The <code>ProxyHelper</code> util class is removed in favor of <code>ServiceProxyBuilder</code> / <code>ServiceBinder</code> equivalents.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+ProxyHelper.registerService(MyService.class, vertx, service, <span class="string"><span class="delimiter">&quot;</span><span class="content">the-address</span><span class="delimiter">&quot;</span></span>);
+MyService proxy = ProxyHelper.createProxy(MyService.class, vertx, <span class="string"><span class="delimiter">&quot;</span><span class="content">the-address</span><span class="delimiter">&quot;</span></span>);
+
+<span class="comment">// 5.0</span>
+<span class="keyword">new</span> ServiceBinder(vertx)
+  .setAddress(<span class="string"><span class="delimiter">&quot;</span><span class="content">the-address</span><span class="delimiter">&quot;</span></span>)
+  .register(MyService.class, service);
+MyService proxy = <span class="keyword">new</span> ServiceProxyBuilder(vertx)
+  .setAddress(<span class="string"><span class="delimiter">&quot;</span><span class="content">the-address</span><span class="delimiter">&quot;</span></span>)
+  .build(MyService.class)</code></pre>
 </div>
 </div>
 </div>
@@ -2157,6 +2384,35 @@ Vertx vertx = Vertx.builder()
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_remove_influxdb_options_number_of_threads">Remove InfluxDB options number of threads</h3>
+<div class="paragraph">
+<p><code>VertxInfluxDbOptions#getNumThreads</code> and <code>VertxInfluxDbOptions#setNumThreads</code> are no longer used.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+influxDbOptions.setNumThreads(numThreads);
+
+<span class="comment">// 5.0</span></code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_rename_metrics_options_request_tag_provider">Rename metrics options request tag provider</h3>
+<div class="paragraph">
+<p><code>VertxMicrometerMetricsOptions#setRequestTagsProvider</code> and <code>VertxMicrometerMetricsOptions#getRequestTagsProvider</code> are removed in favour of <code>VertxMicrometerMetricsOptions#setServerRequestTagsProvider</code> and <code>VertxMicrometerMetricsOptions#getServerRequestTagsProvider</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+options.setRequestsTagsProvider(provider);
+
+<span class="comment">// 5.0</span>
+options.setServerRequestsTagsProvider(provider);</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2250,6 +2506,18 @@ OutputUnit ou = <span class="keyword">new</span> OutputUnit(<span class="string"
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_removal_of_schematype_int_constant">Removal of SchemaType INT constant</h3>
+<div class="paragraph">
+<p>Instead, use <code>SchemaType#INTEGER</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_remove_of_validationexception_createexception_methods">Remove of ValidationException createException methods</h3>
+<div class="paragraph">
+<p>Instead, use the same signature <code>ValidationException#create</code> replacements.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2272,7 +2540,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-12-17 04:00:59 UTC
+Last updated 2024-12-17 15:01:24 UTC
 </div>
 </div>
 </body>
