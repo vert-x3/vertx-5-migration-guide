@@ -478,6 +478,12 @@ Scheduler scheduler = RxHelper.scheduler(vertx);
 Observable<Long> timer = Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
 ----
 
+=== Context local storage removal
+
+The context local storage API has been removed from the public API since it should not have been public in the first place and is meant for extending Vert.x
+
+Its methods have been moved to `io.vertx.core.internal.ContextInternal` interface and might be removed any time in Vert.x 5 since there is a alternative implementation for it (`io.vertx.core.spi.context.storage.ContextLocal).
+
 === keyCertOptions key manager mapper removal
 
 `KeyCertOptions#keyManagerMapper()` method has been removed in {VertX5}, implementors must instead implement `keyManagerFactoryMappermethod` that provides the opportunity to cache the `KeyManagerFactory` to the implementor that controls the lifecycle of the key manager.

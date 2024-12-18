@@ -53,6 +53,8 @@ include::modules/vertx_mongo_client.adoc[leveloffset=+1]
 
 include::modules/vertx_redis_client.adoc[leveloffset=+1]
 
+include::modules/vertx_consul_client.adoc[leveloffset=+1]
+
 include::modules/vertx_health_check.adoc[leveloffset=+1]
 
 include::modules/vertx_circuit_breaker.adoc[leveloffset=+1]

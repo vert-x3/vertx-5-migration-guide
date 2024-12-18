@@ -1,0 +1,13 @@
+= {VertX} Consul Client
+
+The `io.vertx.ext.consul.AclToken` has been removed, instead `io.vertx.ext.consul.token.AclToken` should be used.
+
+These deprecated API methods has been removed:
+
+- `Check#getNodeName()`, instead `Check#getNode()` should be used.
+- `ConsulClient#createAclToken(io.vertx.ext.consul.AclToken)`, instead use `createAclToken(io.vertx.ext.consul.token.AclToken)`
+- `ConsulClient#updateAclToken(io.vertx.ext.consul.AclToken)`, instead use `updateAclToken(String, io.vertx.ext.consul.token.AclToken)`
+- `ConsulClient#cloneAclToken(String)`, instead use `cloneAclToken(String, CloneAclTokenOptions)`
+- `ConsulClient#infoAclToken(String)`, instead use `readAclToken(String)`
+- `ConsulClient#destroyAclToken(String)`, instead use `deleteAclToken(String)`
+- `ConsulClient#listAclTokens()`, instead use `getAclTokens()`
