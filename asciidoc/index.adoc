@@ -51,6 +51,8 @@ include::modules/vertx_sql_client.adoc[leveloffset=+1]
 
 include::modules/vertx_mongo_client.adoc[leveloffset=+1]
 
+include::modules/vertx_rabbitmq_client.adoc[leveloffset=+1]
+
 include::modules/vertx_redis_client.adoc[leveloffset=+1]
 
 include::modules/vertx_health_check.adoc[leveloffset=+1]
