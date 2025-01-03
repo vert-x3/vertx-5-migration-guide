@@ -1,0 +1,184 @@
+= {VertX} RabbitMQ Client
+
+The 4.x RabbitMQ client library presented a high level abstraction of the RabbitMQ API that unfortunately 
+made some RabbitMQ uses impossible.
+This has meant that the 5.0 RabbitMQ client library is a complete rewrite with a very different API.
+
+== Establishing a Connection
+
+The 4.x RabbitMQ client library uses a single RabbitMQClient that encapsulates the connection and the channel, 
+for the 5.0 client library these two are handled separately and it is possible to have multiple channels per connection.
+
+The 5.0 RabbitMQChannel has the closest API to the 4.x RabbitMQClient.
+
+[source,java]
+----
+// 4.x
+    RabbitMQOptions config = new RabbitMQOptions();
+    // full amqp uri
+    config.setUri("amqp://xvjvsrrc:VbuL1atClKt7zVNQha0bnnScbNvGiqgb@brokerhost/vhost");
+    RabbitMQClient client = RabbitMQClient.create(vertx, config);
+
+    // Connect
+    client.start(asyncResult -> {
+      if (asyncResult.succeeded()) {
+        logger.info("RabbitMQ successfully connected!");
+      } else {
+        logger.warning("Failed to connect to RabbitMQ: {0}", asyncResult.cause().getMessage());
+      }
+    });
+
+// 5.0
+    RabbitMQOptions config = new RabbitMQOptions();
+    config.setUri("amqp://brokerhost/vhost");
+    config.setConnectionName(this.getClass().getSimpleName());
+    config.setUser("guest");
+    config.setPassword("guest");
+    
+    RabbitMQClient.connect(vertx, config)
+            .compose(connection -> {
+              RabbitMQChannelBuilder builder = connection.createChannelBuilder();
+              return builder.openChannel();
+            })
+            .onSuccess(channel -> logger.info("Channel opened: {0}", channel.getChannelId()))
+            .onFailure(ex -> logger.warning("Failed to connect to RabbitMQ: {0}", ex))
+            ;
+----
+
+== The connectionEstablishedCallback
+
+An asynchronous RabbitMQ client with automatic reconnects must provide a way to create exchanges and queues before the channel is available for use.
+In the 4.x library this is done with a single connectionEstablishedCallback added to the RabbitMQClient, for the 5.0 library it is done with a 
+channelOpenHandler that must be declared before the channel is opened.
+
+The 4.x connectionEstablishedCallback passes in the RabbitMQClient, with the 5.0 library the RabbitMQChannel has not been established at the time that 
+the channelOpenHandler is called, so it passes in the raw com.rabbitmq.client.Channel.
+The channelOpenHandler is called inside a blocking handler.
+
+[source,java]
+----
+// 4.x
+    RabbitMQClient client = RabbitMQClient.create(vertx, config);
+    client.addConnectionEstablishedCallback(promise -> {
+                client.exchangeDeclare(EXCHANGE_NAME, EXCHANGE_TYPE, EXCHANGE_DURABLE, EXCHANGE_AUTO_DELETE)
+                    .compose(v -> {
+                      return client.queueDeclare(QUEUE_NAME, QUEUE_DURABLE, QUEUE_EXCLUSIVE, QUEUE_AUTO_DELETE);
+                    })
+                    .compose(declareOk -> {
+                      return client.queueBind(QUEUE_NAME, EXCHANGE_NAME, "");
+                    })
+                    .onComplete(promise);
+    });
+
+// 5.0
+    RabbitMQClient.connect(vertx, config)
+            .compose(connection -> {
+              return connection.createChannelBuilder()
+                      .withChannelOpenHandler(chann -> {
+                        chann.exchangeDeclare(EXCHANGE_NAME, EXCHANGE_TYPE, EXCHANGE_DURABLE, EXCHANGE_AUTO_DELETE, null);
+                        chann.queueDeclare(QUEUE_NAME, QUEUE_DURABLE, QUEUE_EXCLUSIVE, QUEUE_AUTO_DELETE, null);
+                        chann.queueBind(QUEUE_NAME, EXCHANGE_NAME, "", null);
+                      })
+                      .openChannel();
+            })
+            ;
+----
+
+== Consuming
+
+The 5.0 library RabbitMQChannel object exposes the basicConsume method, but it is recommended that 
+a RabbitMQConsumer is used to provide the messages as a Vert.x ReadStream.
+
+Unless every message can be handled synchronously without any blocking calls there may be multiple messages
+in flight within the consumer concurrently.
+It is important that RabbitMQ QOS is used to restrict the number of messages received by the client.
+
+Note the use of the STRING_MESSAGE_CODEC to convert the message body to a string before the callback is called.
+
+[source,java]
+----
+// 4.x
+    client.basicConsumer(QUEUE_NAME, rabbitMQConsumerAsyncResult -> {
+      if (rabbitMQConsumerAsyncResult.succeeded()) {
+        RabbitMQConsumer mqConsumer = rabbitMQConsumerAsyncResult.result();
+        mqConsumer.handler(message -> {
+          System.out.println("Got message: " + message.body().toString());
+        });
+      }
+    });
+
+// 5.0
+    connection.createChannelBuilder()
+            .withQos(0, 10)
+            .createConsumer(RabbitMQChannelBuilder.STRING_MESSAGE_CODEC
+                    , QUEUE_NAME
+                    , null
+                    , new RabbitMQConsumerOptions()
+                    , (consumer, message) -> {
+                      System.out.println("Got message: " + message.body());
+                      return message.basicAck();
+                    });
+
+----
+
+
+== Publishing
+
+RabbitMQ provides two options for messages, it can either guarantee that consumers receive a message no more than once, 
+or it can guarantee that consumers receive a message at least once.
+The first of these is the default and requires nothing beyond a call to basicPublish, but published messages may be lost and not delivered at all.
+
+In order to guarantee that a message is received the publisher must wait for confirmation from RabbitMQ - if that confirmation has not arrived
+before the connection to the broker is broken the publisher must resend the message when the broker returns.
+
+The Vert.x RabbitMQ library provides a RabbitMQPublisher to make asynchronous handling of confirmations simpler.
+
+[source,java]
+----
+// 4.x
+    Map<String, JsonObject> messages = ...
+    RabbitMQPublisher publisher = RabbitMQPublisher.create(vertx, client, options);
+
+    publisher.getConfirmationStream().handler(conf -> {
+      if (conf.isSucceeded()) {
+        messages.remove(conf.getMessageId());
+      }
+    });
+
+    messages.forEach((k,v) -> {
+      com.rabbitmq.client.BasicProperties properties = new AMQP.BasicProperties.Builder()
+              .messageId(k)
+              .build();
+      publisher.publish(EXCHANGE_NAME, ROUTING_KEY, properties, v.toBuffer());
+    });
+
+    // Wait for messages to be empty
+
+
+// 5.0
+    Map<String, JsonObject> messages = ...
+    RabbitMQClient.connect(vertx, config)
+            .compose(connection -> {
+              return connection.createChannelBuilder()
+                      .createPublisher(EXCHANGE_NAME
+                              , RabbitMQChannelBuilder.JSON_OBJECT_MESSAGE_CODEC
+                              , new RabbitMQPublisherOptions().setResendOnReconnect(true)
+                      );
+            })
+            .compose(publisher -> {
+              List<Future<Void>> futures = new ArrayList<>(messages.size());
+              messages.forEach((k,v) -> {
+                AMQP.BasicProperties properties = new AMQP.BasicProperties.Builder()
+                        .messageId(k)
+                        .build();
+                futures.add(publisher.publish(ROUTING_KEY, properties, v));
+              });
+              
+              return Future.all(futures);              
+            })
+            .onSuccess(v -> logger.info("All message sent and confirmed"))
+            .onFailure(ex -> logger.log(Level.SEVERE, "Failed: {0}", ex))
+            ;
+
+
+----
