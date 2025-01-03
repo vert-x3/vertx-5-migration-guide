@@ -613,6 +613,14 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_options_addendpointsetendpoint_replacements">Options addEndpoint/setEndpoint replacements</a></li>
 </ul>
 </li>
+<li><a href="#_vert_x_rabbitmq_client">Vert.x RabbitMQ Client</a>
+<ul class="sectlevel2">
+<li><a href="#_establishing_a_connection">Establishing a Connection</a></li>
+<li><a href="#_the_connectionestablishedcallback">The connectionEstablishedCallback</a></li>
+<li><a href="#_consuming">Consuming</a></li>
+<li><a href="#_publishing">Publishing</a></li>
+</ul>
+</li>
 <li><a href="#_vert_x_consul_client">Vert.x Consul Client</a></li>
 <li><a href="#_vert_x_health_check">Vert.x Health Check</a>
 <ul class="sectlevel2">
@@ -2075,6 +2083,205 @@ options.setConnectionString(location);</code></pre>
 </div>
 </div>
 <div class="sect1">
+<h2 id="_vert_x_rabbitmq_client">Vert.x RabbitMQ Client</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The 4.x RabbitMQ client library presented a high level abstraction of the RabbitMQ API that unfortunately
+made some RabbitMQ uses impossible.
+This has meant that the 5.0 RabbitMQ client library is a complete rewrite with a very different API.</p>
+</div>
+<div class="sect2">
+<h3 id="_establishing_a_connection">Establishing a Connection</h3>
+<div class="paragraph">
+<p>The 4.x RabbitMQ client library uses a single RabbitMQClient that encapsulates the connection and the channel,
+for the 5.0 client library these two are handled separately and it is possible to have multiple channels per connection.</p>
+</div>
+<div class="paragraph">
+<p>The 5.0 RabbitMQChannel has the closest API to the 4.x RabbitMQClient.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+    RabbitMQOptions config = <span class="keyword">new</span> RabbitMQOptions();
+    <span class="comment">// full amqp uri</span>
+    config.setUri(<span class="string"><span class="delimiter">&quot;</span><span class="content">amqp://xvjvsrrc:VbuL1atClKt7zVNQha0bnnScbNvGiqgb@brokerhost/vhost</span><span class="delimiter">&quot;</span></span>);
+    RabbitMQClient client = RabbitMQClient.create(vertx, config);
+
+    <span class="comment">// Connect</span>
+    client.start(asyncResult -&gt; {
+      <span class="keyword">if</span> (asyncResult.succeeded()) {
+        logger.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">RabbitMQ successfully connected!</span><span class="delimiter">&quot;</span></span>);
+      } <span class="keyword">else</span> {
+        logger.warning(<span class="string"><span class="delimiter">&quot;</span><span class="content">Failed to connect to RabbitMQ: {0}</span><span class="delimiter">&quot;</span></span>, asyncResult.cause().getMessage());
+      }
+    });
+
+<span class="comment">// 5.0</span>
+    RabbitMQOptions config = <span class="keyword">new</span> RabbitMQOptions();
+    config.setUri(<span class="string"><span class="delimiter">&quot;</span><span class="content">amqp://brokerhost/vhost</span><span class="delimiter">&quot;</span></span>);
+    config.setConnectionName(<span class="local-variable">this</span>.getClass().getSimpleName());
+    config.setUser(<span class="string"><span class="delimiter">&quot;</span><span class="content">guest</span><span class="delimiter">&quot;</span></span>);
+    config.setPassword(<span class="string"><span class="delimiter">&quot;</span><span class="content">guest</span><span class="delimiter">&quot;</span></span>);
+
+    RabbitMQClient.connect(vertx, config)
+            .compose(connection -&gt; {
+              RabbitMQChannelBuilder builder = connection.createChannelBuilder();
+              <span class="keyword">return</span> builder.openChannel();
+            })
+            .onSuccess(channel -&gt; logger.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">Channel opened: {0}</span><span class="delimiter">&quot;</span></span>, channel.getChannelId()))
+            .onFailure(ex -&gt; logger.warning(<span class="string"><span class="delimiter">&quot;</span><span class="content">Failed to connect to RabbitMQ: {0}</span><span class="delimiter">&quot;</span></span>, ex))
+            ;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_connectionestablishedcallback">The connectionEstablishedCallback</h3>
+<div class="paragraph">
+<p>An asynchronous RabbitMQ client with automatic reconnects must provide a way to create exchanges and queues before the channel is available for use.
+In the 4.x library this is done with a single connectionEstablishedCallback added to the RabbitMQClient, for the 5.0 library it is done with a
+channelOpenHandler that must be declared before the channel is opened.</p>
+</div>
+<div class="paragraph">
+<p>The 4.x connectionEstablishedCallback passes in the RabbitMQClient, with the 5.0 library the RabbitMQChannel has not been established at the time that
+the channelOpenHandler is called, so it passes in the raw com.rabbitmq.client.Channel.
+The channelOpenHandler is called inside a blocking handler.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+    RabbitMQClient client = RabbitMQClient.create(vertx, config);
+    client.addConnectionEstablishedCallback(promise -&gt; {
+                client.exchangeDeclare(EXCHANGE_NAME, EXCHANGE_TYPE, EXCHANGE_DURABLE, EXCHANGE_AUTO_DELETE)
+                    .compose(v -&gt; {
+                      <span class="keyword">return</span> client.queueDeclare(QUEUE_NAME, QUEUE_DURABLE, QUEUE_EXCLUSIVE, QUEUE_AUTO_DELETE);
+                    })
+                    .compose(declareOk -&gt; {
+                      <span class="keyword">return</span> client.queueBind(QUEUE_NAME, EXCHANGE_NAME, <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>);
+                    })
+                    .onComplete(promise);
+    });
+
+<span class="comment">// 5.0</span>
+    RabbitMQClient.connect(vertx, config)
+            .compose(connection -&gt; {
+              <span class="keyword">return</span> connection.createChannelBuilder()
+                      .withChannelOpenHandler(chann -&gt; {
+                        chann.exchangeDeclare(EXCHANGE_NAME, EXCHANGE_TYPE, EXCHANGE_DURABLE, EXCHANGE_AUTO_DELETE, <span class="predefined-constant">null</span>);
+                        chann.queueDeclare(QUEUE_NAME, QUEUE_DURABLE, QUEUE_EXCLUSIVE, QUEUE_AUTO_DELETE, <span class="predefined-constant">null</span>);
+                        chann.queueBind(QUEUE_NAME, EXCHANGE_NAME, <span class="string"><span class="delimiter">&quot;</span><span class="delimiter">&quot;</span></span>, <span class="predefined-constant">null</span>);
+                      })
+                      .openChannel();
+            })
+            ;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_consuming">Consuming</h3>
+<div class="paragraph">
+<p>The 5.0 library RabbitMQChannel object exposes the basicConsume method, but it is recommended that
+a RabbitMQConsumer is used to provide the messages as a Vert.x ReadStream.</p>
+</div>
+<div class="paragraph">
+<p>Unless every message can be handled synchronously without any blocking calls there may be multiple messages
+in flight within the consumer concurrently.
+It is important that RabbitMQ QOS is used to restrict the number of messages received by the client.</p>
+</div>
+<div class="paragraph">
+<p>Note the use of the STRING_MESSAGE_CODEC to convert the message body to a string before the callback is called.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+    client.basicConsumer(QUEUE_NAME, rabbitMQConsumerAsyncResult -&gt; {
+      <span class="keyword">if</span> (rabbitMQConsumerAsyncResult.succeeded()) {
+        RabbitMQConsumer mqConsumer = rabbitMQConsumerAsyncResult.result();
+        mqConsumer.handler(message -&gt; {
+          <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got message: </span><span class="delimiter">&quot;</span></span> + message.body().toString());
+        });
+      }
+    });
+
+<span class="comment">// 5.0</span>
+    connection.createChannelBuilder()
+            .withQos(<span class="integer">0</span>, <span class="integer">10</span>)
+            .createConsumer(RabbitMQChannelBuilder.STRING_MESSAGE_CODEC
+                    , QUEUE_NAME
+                    , <span class="predefined-constant">null</span>
+                    , <span class="keyword">new</span> RabbitMQConsumerOptions()
+                    , (consumer, message) -&gt; {
+                      <span class="predefined-type">System</span>.out.println(<span class="string"><span class="delimiter">&quot;</span><span class="content">Got message: </span><span class="delimiter">&quot;</span></span> + message.body());
+                      <span class="keyword">return</span> message.basicAck();
+                    });</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_publishing">Publishing</h3>
+<div class="paragraph">
+<p>RabbitMQ provides two options for messages, it can either guarantee that consumers receive a message no more than once,
+or it can guarantee that consumers receive a message at least once.
+The first of these is the default and requires nothing beyond a call to basicPublish, but published messages may be lost and not delivered at all.</p>
+</div>
+<div class="paragraph">
+<p>In order to guarantee that a message is received the publisher must wait for confirmation from RabbitMQ - if that confirmation has not arrived
+before the connection to the broker is broken the publisher must resend the message when the broker returns.</p>
+</div>
+<div class="paragraph">
+<p>The Vert.x RabbitMQ library provides a RabbitMQPublisher to make asynchronous handling of confirmations simpler.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, JsonObject&gt; messages = ...
+    RabbitMQPublisher publisher = RabbitMQPublisher.create(vertx, client, options);
+
+    publisher.getConfirmationStream().handler(conf -&gt; {
+      <span class="keyword">if</span> (conf.isSucceeded()) {
+        messages.remove(conf.getMessageId());
+      }
+    });
+
+    messages.forEach((k,v) -&gt; {
+      com.rabbitmq.client.BasicProperties properties = <span class="keyword">new</span> AMQP.BasicProperties.Builder()
+              .messageId(k)
+              .build();
+      publisher.publish(EXCHANGE_NAME, ROUTING_KEY, properties, v.toBuffer());
+    });
+
+    <span class="comment">// Wait for messages to be empty</span>
+
+
+<span class="comment">// 5.0</span>
+    <span class="predefined-type">Map</span>&lt;<span class="predefined-type">String</span>, JsonObject&gt; messages = ...
+    RabbitMQClient.connect(vertx, config)
+            .compose(connection -&gt; {
+              <span class="keyword">return</span> connection.createChannelBuilder()
+                      .createPublisher(EXCHANGE_NAME
+                              , RabbitMQChannelBuilder.JSON_OBJECT_MESSAGE_CODEC
+                              , <span class="keyword">new</span> RabbitMQPublisherOptions().setResendOnReconnect(<span class="predefined-constant">true</span>)
+                      );
+            })
+            .compose(publisher -&gt; {
+              <span class="predefined-type">List</span>&lt;<span class="predefined-type">Future</span>&lt;<span class="predefined-type">Void</span>&gt;&gt; futures = <span class="keyword">new</span> <span class="predefined-type">ArrayList</span>&lt;&gt;(messages.size());
+              messages.forEach((k,v) -&gt; {
+                AMQP.BasicProperties properties = <span class="keyword">new</span> AMQP.BasicProperties.Builder()
+                        .messageId(k)
+                        .build();
+                futures.add(publisher.publish(ROUTING_KEY, properties, v));
+              });
+
+              <span class="keyword">return</span> <span class="predefined-type">Future</span>.all(futures);
+            })
+            .onSuccess(v -&gt; logger.info(<span class="string"><span class="delimiter">&quot;</span><span class="content">All message sent and confirmed</span><span class="delimiter">&quot;</span></span>))
+            .onFailure(ex -&gt; logger.log(<span class="predefined-type">Level</span>.SEVERE, <span class="string"><span class="delimiter">&quot;</span><span class="content">Failed: {0}</span><span class="delimiter">&quot;</span></span>, ex))
+            ;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_vert_x_consul_client">Vert.x Consul Client</h2>
 <div class="sectionbody">
 <div class="paragraph">
@@ -2586,7 +2793,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-01-03 04:01:09 UTC
+Last updated 2025-01-03 15:23:39 UTC
 </div>
 </div>
 </body>
