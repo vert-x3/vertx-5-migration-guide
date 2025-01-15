@@ -1,0 +1,7 @@
+= {VertX} Zipkin
+
+== Upgrade to Zipkin Brave 6
+
+https://github.com/openzipkin/brave/releases/tag/6.0.0[Zipkin Brave 6] is a breaking change release.
+
+Nevertheless, the {VertX} Zipkin API doesn't change in {VertX5}.
