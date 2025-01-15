@@ -78,3 +78,5 @@ include::modules/vertx_dropwizard_metrics.adoc[leveloffset=+1]
 include::modules/vertx_json_schema.adoc[leveloffset=+1]
 
 include::modules/vertx_hazelcast.adoc[leveloffset=+1]
+
+include::modules/vertx_zipkin.adoc[leveloffset=+1]
