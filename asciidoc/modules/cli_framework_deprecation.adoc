@@ -52,3 +52,6 @@ If your application is packaged as an executable JAR, having the `Main-Class` at
 ----
 java -jar myapp.jar my.app.MainVerticle
 ----
+
+The {VertX} {v5} Application Launcher doesn't support live redeployment of verticles upon file changes.
+If you need this feature in development phase, and your project is built with Maven, check out the https://reactiverse.io/vertx-maven-plugin/[Vert.x Maven Plugin].
