@@ -551,6 +551,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_logging">Logging</a></li>
 <li><a href="#_system_properties">System properties</a></li>
 <li><a href="#_worker_verticles">Worker verticles</a></li>
+<li><a href="#_event_bus_changes">Event bus changes</a></li>
 <li><a href="#_miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
@@ -1558,6 +1559,27 @@ instance.</p>
 </div>
 <div class="paragraph">
 <p>Previously, this was following event-loop deployments which use an event-loop per verticle instance for scalability purpose.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_event_bus_changes">Event bus changes</h3>
+<div class="sect3">
+<h4 id="_message_consumer_dynamic_max_buffered_message_removal">Message consumer dynamic max buffered message removal</h4>
+<div class="paragraph">
+<p>The event-bus message consumer has a dynamic max buffered messages upper bound. Instead, this should be configured when the consumer is created:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+eventBus.consumer(ADDRESS, msg -&gt; ...).setMaxBufferedMessages(<span class="integer">2000</span>);
+
+<span class="comment">// 5.0</span>
+eventBus.consumer(<span class="keyword">new</span> MessageConsumerOptions()
+     .setAddress(ADDRESS)
+     .setMaxBufferedMessages(<span class="integer">2000</span>)
+   , msg -&gt; ...);</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -2816,7 +2838,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-02-06 04:01:15 UTC
+Last updated 2025-02-06 14:17:33 UTC
 </div>
 </div>
 </body>
