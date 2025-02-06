@@ -438,6 +438,24 @@ instance.
 
 Previously, this was following event-loop deployments which use an event-loop per verticle instance for scalability purpose.
 
+== Event bus changes
+
+=== Message consumer dynamic max buffered message removal
+
+The event-bus message consumer has a dynamic max buffered messages upper bound. Instead, this should be configured when the consumer is created:
+
+[source,java]
+----
+// 4.x
+eventBus.consumer(ADDRESS, msg -> ...).setMaxBufferedMessages(2000);
+
+// 5.0
+eventBus.consumer(new MessageConsumerOptions()
+     .setAddress(ADDRESS)
+     .setMaxBufferedMessages(2000)
+   , msg -> ...);
+----
+
 == Miscellaneous
 
 === NetServer connect stream removals
