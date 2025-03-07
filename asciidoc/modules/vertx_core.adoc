@@ -456,6 +456,32 @@ eventBus.consumer(new MessageConsumerOptions()
    , msg -> ...);
 ----
 
+== File system
+
+=== Recursive boolean in filesystem delete method removal
+
+Methods `FileSystem#deleteRecursive(...)` declares a `recursive` boolean that pretty much mimics calling `FileSystem#delete`, instead users should either call `delete` or `deleteRecursive`
+
+[source,java]
+----
+// 4.x
+stream.deleteRecusrive(path, false);
+
+// 5.0
+stream.delete(path);
+----
+
+Likewise,
+
+[source,java]
+----
+// 4.x
+stream.deleteRecursive(path, true);
+
+// 5.0
+stream.deleteRecursive(path);
+----
+
 == Miscellaneous
 
 === NetServer connect stream removals
