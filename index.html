@@ -552,6 +552,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_system_properties">System properties</a></li>
 <li><a href="#_worker_verticles">Worker verticles</a></li>
 <li><a href="#_event_bus_changes">Event bus changes</a></li>
+<li><a href="#_file_system">File system</a></li>
 <li><a href="#_miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
@@ -1584,6 +1585,36 @@ eventBus.consumer(<span class="keyword">new</span> MessageConsumerOptions()
 </div>
 </div>
 <div class="sect2">
+<h3 id="_file_system">File system</h3>
+<div class="sect3">
+<h4 id="_recursive_boolean_in_filesystem_delete_method_removal">Recursive boolean in filesystem delete method removal</h4>
+<div class="paragraph">
+<p>Methods <code>FileSystem#deleteRecursive(&#8230;&#8203;)</code> declares a <code>recursive</code> boolean that pretty much mimics calling <code>FileSystem#delete</code>, instead users should either call <code>delete</code> or <code>deleteRecursive</code></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+stream.deleteRecusrive(path, <span class="predefined-constant">false</span>);
+
+<span class="comment">// 5.0</span>
+stream.delete(path);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Likewise,</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+stream.deleteRecursive(path, <span class="predefined-constant">true</span>);
+
+<span class="comment">// 5.0</span>
+stream.deleteRecursive(path);</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="_miscellaneous">Miscellaneous</h3>
 <div class="sect3">
 <h4 id="_netserver_connect_stream_removals">NetServer connect stream removals</h4>
@@ -1629,12 +1660,41 @@ Scheduler scheduler = RxHelper.scheduler(vertx);
 </div>
 </div>
 <div class="sect3">
-<h4 id="_context_local_storage_removal">Context local storage removal</h4>
+<h4 id="_context_local_storage_changes">Context local storage changes</h4>
 <div class="paragraph">
-<p>The context local storage API has been removed from the public API since it should not have been public in the first place and is meant for extending Vert.x</p>
+<p>The legacy context local storage API has been removed from the public API.</p>
 </div>
 <div class="paragraph">
-<p>Its methods have been moved to <code>io.vertx.core.internal.ContextInternal</code> interface and might be removed any time in Vert.x 5 since there is a alternative implementation for it (`io.vertx.core.spi.context.storage.ContextLocal).</p>
+<p>The following methods have been moved to <code>io.vertx.core.internal.ContextInternal</code> interface and might be removed any time in Vert.x 5.</p>
+</div>
+<div class="paragraph">
+<p>The context local is very much like the previous API:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+context.putLocal(<span class="string"><span class="delimiter">&quot;</span><span class="content">custom</span><span class="delimiter">&quot;</span></span>, <span class="keyword">new</span> CustomLocal());
+
+<span class="comment">// 5.0</span>
+context.putLocal(CustomLocal.KEY, <span class="keyword">new</span> CustomLocal());</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A proper custom local declarations is necessary:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="directive">public</span> <span class="type">class</span> <span class="class">CustomLocal</span> <span class="directive">implements</span> VertxServiceProvider {
+  <span class="directive">public</span> <span class="directive">static</span> <span class="directive">final</span> ContextLocal&lt;CustomLocal&gt; KEY = ContextLocal.registerLocal(CustomLocal.class);
+  <span class="comment">/*
+    Holds some state
+   */</span>
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Such provider must then be declared as a <a href="https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html">Java service provider</a>
+in <code>META/INF/services/io.vertx.core.spi.VertxServiceProvider</code> and optionally in a <code>module-info.java</code>.&lt;/p&gt;</p>
 </div>
 </div>
 <div class="sect3">
@@ -2838,7 +2898,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-03-07 04:01:03 UTC
+Last updated 2025-03-07 09:48:37 UTC
 </div>
 </div>
 </body>
