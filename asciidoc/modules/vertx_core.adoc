@@ -522,11 +522,37 @@ Scheduler scheduler = RxHelper.scheduler(vertx);
 Observable<Long> timer = Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
 ----
 
-=== Context local storage removal
+=== Context local storage changes
 
-The context local storage API has been removed from the public API since it should not have been public in the first place and is meant for extending Vert.x
+The legacy context local storage API has been removed from the public API.
 
-Its methods have been moved to `io.vertx.core.internal.ContextInternal` interface and might be removed any time in Vert.x 5 since there is a alternative implementation for it (`io.vertx.core.spi.context.storage.ContextLocal).
+The following methods have been moved to `io.vertx.core.internal.ContextInternal` interface and might be removed any time in Vert.x 5.
+
+The context local is very much like the previous API:
+
+[source,java]
+----
+// 4.x
+context.putLocal("custom", new CustomLocal());
+
+// 5.0
+context.putLocal(CustomLocal.KEY, new CustomLocal());
+----
+
+A proper custom local declarations is necessary:
+
+[source,java]
+----
+public class CustomLocal implements VertxServiceProvider {
+  public static final ContextLocal<CustomLocal> KEY = ContextLocal.registerLocal(CustomLocal.class);
+  /*
+    Holds some state
+   */
+}
+----
+
+Such provider must then be declared as a https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html[Java service provider]
+in `META/INF/services/io.vertx.core.spi.VertxServiceProvider` and optionally in a `module-info.java`.</p>
 
 === keyCertOptions key manager mapper removal
 
