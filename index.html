@@ -1632,6 +1632,41 @@ server.connectHandler(socket -&gt; ...).listen();</code></pre>
 </div>
 </div>
 <div class="sect3">
+<h4 id="_nostacktracethrowable_changes">NoStackTraceThrowable changes</h4>
+<div class="literalblock">
+<div class="content">
+<pre>`Future#fail(String msg)` fail the future with a `NoStackTraceThrowable` wrapping the error message.</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When a virtual thread awaits the result of a future, in case of a failure <code>NoStackTraceThrowable</code> is rethrow which forces
+the virtual thread to catch an instance of <code>Throwable</code>.</p>
+</div>
+<div class="paragraph">
+<p>Since Vert.x 5, the super class of <code>NoStackTraceThrowable</code> is <code>VertxException</code> instead.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+<span class="keyword">try</span> {
+  future.await();
+} <span class="keyword">catch</span>(<span class="predefined-type">Throwable</span> t) {
+  ...
+}
+
+<span class="comment">// 5.0</span>
+<span class="keyword">try</span> {
+  future.await();
+} <span class="keyword">catch</span>(<span class="exception">Exception</span> t) {
+  ...
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This impacts the use of Vert.x virtual threads and Kotlin coroutines.</p>
+</div>
+</div>
+<div class="sect3">
 <h4 id="_timeoutstream_removal">TimeoutStream removal</h4>
 <div class="paragraph">
 <p><code>TimeoutStream</code> has been removed. This stream was designed for Rx like languages and the actually don&#8217;t provide any benefits at the expense of the API. Instead, the framework scheduler should be used instead along with a Vert.x context.</p>
@@ -2898,7 +2933,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-03-10 04:00:58 UTC
+Last updated 2025-03-10 09:10:17 UTC
 </div>
 </div>
 </body>
