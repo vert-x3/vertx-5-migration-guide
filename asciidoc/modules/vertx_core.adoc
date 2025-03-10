@@ -497,6 +497,34 @@ server.connectStream().handler(socket -> ...);
 server.connectHandler(socket -> ...).listen();
 ----
 
+=== NoStackTraceThrowable changes
+
+ `Future#fail(String msg)` fail the future with a `NoStackTraceThrowable` wrapping the error message.
+
+When a virtual thread awaits the result of a future, in case of a failure `NoStackTraceThrowable` is rethrow which forces
+the virtual thread to catch an instance of `Throwable`.
+
+Since Vert.x 5, the super class of `NoStackTraceThrowable` is `VertxException` instead.
+
+[source,java]
+----
+// 4.x
+try {
+  future.await();
+} catch(Throwable t) {
+  ...
+}
+
+// 5.0
+try {
+  future.await();
+} catch(Exception t) {
+  ...
+}
+----
+
+This impacts the use of Vert.x virtual threads and Kotlin coroutines.
+
 === TimeoutStream removal
 
 `TimeoutStream` has been removed. This stream was designed for Rx like languages and the actually don't provide any benefits at the expense of the API. Instead, the framework scheduler should be used instead along with a Vert.x context.
