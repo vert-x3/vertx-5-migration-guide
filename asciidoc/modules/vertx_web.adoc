@@ -34,3 +34,23 @@ StaticHandler handler = StaticHandler.create().setAllowRootFileSystemAccess(true
 // 5.0
 StaticHandler handler = StaticHandler.create(FileSystemAccess.ROOT, root);
 ----
+
+== Unwrapping a template engine
+
+Template engine method to obtain the underlying engine instance have been removed after deprecation:
+
+- `HandlebarsTemplateEngine#getHandlebars`
+- `ThymeleafTemplateEngine#getThymeleafTemplateEngine`
+
+Instead `TemplateEngine#unwrap` should be used:
+
+[source,java]
+----
+// 4.x
+Handlebars handlebarsUnwrapped = handlebarsTemplateEngine.getHandlebars();
+TemplateEngine thymeleafUnwrapped = thymeleafTemplateEngine.getThymeleafTemplateEngine();
+
+// 5.0
+handlebarsUnwrapped = handlebarsTemplateEngine.unwrap();
+thymeleafUnwrapped = thymeleafTemplateEngine.unwrap();
+----
