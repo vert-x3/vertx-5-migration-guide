@@ -577,6 +577,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_routingcontext_user_api">RoutingContext user API</a></li>
 <li><a href="#_static_handler_configuration">Static handler configuration</a></li>
 <li><a href="#_unwrapping_a_template_engine">Unwrapping a template engine</a></li>
+<li><a href="#_cors_regex_origins">CORS regex origins</a></li>
 </ul>
 </li>
 <li><a href="#_vert_x_web_client">Vert.x Web Client</a>
@@ -1953,6 +1954,36 @@ thymeleafUnwrapped = thymeleafTemplateEngine.unwrap();</code></pre>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_cors_regex_origins">CORS regex origins</h3>
+<div class="paragraph">
+<p>The naming of regular expression origin(s) based methods are changed to be aligned with the rest of the framework</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>CorsHandler#addRelativeOrigin</code></p>
+</li>
+<li>
+<p><code>CorsHandler#addRelativeOrigins</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Instead the <code>addOriginWithRegex</code> or <code>addOriginsWithRegex</code> should be used:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
+CorsHandler.addRelativeOrigin(<span class="string"><span class="delimiter">&quot;</span><span class="content">.*</span><span class="delimiter">&quot;</span></span>);
+CorsHandler.addRelativeOrigins(<span class="predefined-type">List</span>.of(<span class="string"><span class="delimiter">&quot;</span><span class="content">.*</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">https?://.*</span><span class="delimiter">&quot;</span></span>));
+
+<span class="comment">// 5.0</span>
+CorsHandler.addOriginWithRegex(<span class="string"><span class="delimiter">&quot;</span><span class="content">.*</span><span class="delimiter">&quot;</span></span>);
+CorsHandler.addOriginsWithRegex(<span class="predefined-type">List</span>.of(<span class="string"><span class="delimiter">&quot;</span><span class="content">.*</span><span class="delimiter">&quot;</span></span>, <span class="string"><span class="delimiter">&quot;</span><span class="content">https?://.*</span><span class="delimiter">&quot;</span></span>));</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -2977,7 +3008,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-23 04:01:06 UTC
+Last updated 2025-04-23 07:23:20 UTC
 </div>
 </div>
 </body>
