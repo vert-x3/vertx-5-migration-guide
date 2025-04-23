@@ -54,3 +54,23 @@ TemplateEngine thymeleafUnwrapped = thymeleafTemplateEngine.getThymeleafTemplate
 handlebarsUnwrapped = handlebarsTemplateEngine.unwrap();
 thymeleafUnwrapped = thymeleafTemplateEngine.unwrap();
 ----
+
+== CORS regex origins
+
+The naming of regular expression origin(s) based methods are changed to be aligned with the rest of the framework
+
+- `CorsHandler#addRelativeOrigin`
+- `CorsHandler#addRelativeOrigins`
+
+Instead the `addOriginWithRegex` or `addOriginsWithRegex` should be used:
+
+[source,java]
+----
+// 4.x
+CorsHandler.addRelativeOrigin(".*");
+CorsHandler.addRelativeOrigins(List.of(".*", "https?://.*"));
+
+// 5.0
+CorsHandler.addOriginWithRegex(".*");
+CorsHandler.addOriginsWithRegex(List.of(".*", "https?://.*"));
+----
