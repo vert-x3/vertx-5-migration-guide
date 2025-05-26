@@ -58,3 +58,16 @@ options.setRequestsTagsProvider(provider);
 // 5.0
 options.setServerRequestsTagsProvider(provider);
 ----
+
+== Changes in metrics tags enabled by default
+
+The HTTP `ROUTE` tag is no longer enabled by default, due to high cardinality risk.
+
+To enable it, you must modify the metrics options on startup:
+
+[source,java]
+----
+options.addLabels(Label.HTTP_ROUTE);
+----
+
+The POOL `NAME` tag is now enabled by default.
