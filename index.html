@@ -670,6 +670,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_remove_setting_a_registry_on_options">Remove setting a registry on options</a></li>
 <li><a href="#_remove_influxdb_options_number_of_threads">Remove InfluxDB options number of threads</a></li>
 <li><a href="#_rename_metrics_options_request_tag_provider">Rename metrics options request tag provider</a></li>
+<li><a href="#_changes_in_metrics_tags_enabled_by_default">Changes in metrics tags enabled by default</a></li>
 </ul>
 </li>
 <li><a href="#_vert_x_dropwizard_metrics">Vert.x Dropwizard Metrics</a>
@@ -2867,6 +2868,23 @@ options.setServerRequestsTagsProvider(provider);</code></pre>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_changes_in_metrics_tags_enabled_by_default">Changes in metrics tags enabled by default</h3>
+<div class="paragraph">
+<p>The HTTP <code>ROUTE</code> tag is no longer enabled by default, due to high cardinality risk.</p>
+</div>
+<div class="paragraph">
+<p>To enable it, you must modify the metrics options on startup:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="java">options.addLabels(<span class="predefined-type">Label</span>.HTTP_ROUTE);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The POOL <code>NAME</code> tag is now enabled by default.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -3008,7 +3026,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-05-26 04:04:18 UTC
+Last updated 2025-05-27 04:04:26 UTC
 </div>
 </div>
 </body>
