@@ -1412,11 +1412,25 @@ server.requestHandler(request -&gt; ...).listen();</code></pre>
 <div class="paragraph">
 <p>The server WebSocket API can control handshake implicitly (e.g. sending a message) or explicitly (accept or any WebSocket interaction). This result in a more complex implementation than it should be for such API.</p>
 </div>
+<div class="paragraph">
+<p>These two steps are now separate:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the WebSocket handshake handler accepts or rejects a server WebSocket connection based on an application specific criteria</p>
+</li>
+<li>
+<p>The WebSocket handler configures the WebSocket and performs interactions as usual</p>
+</li>
+</ul>
+</div>
 <div class="listingblock">
 <div class="title">Accepting a handshake</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
 server.webSocketHandler(ws -&gt; {
+  ws.handler(msg -&gt; ...);
   ws.accept();
   ws.write();
 };
@@ -1426,6 +1440,7 @@ server.webSocketHandshakeHandler(handshake -&gt; {
   handshake.accept();
 });
 server.webSocketHandler(ws -&gt; {
+  ws.handler(msg -&gt; ...);
   ws.write();
 };</code></pre>
 </div>
@@ -3026,7 +3041,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-06-13 04:05:30 UTC
+Last updated 2025-06-13 07:49:20 UTC
 </div>
 </div>
 </body>
