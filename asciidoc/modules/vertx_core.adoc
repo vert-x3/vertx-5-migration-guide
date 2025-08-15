@@ -332,7 +332,7 @@ server.webSocketHandler(ws -> {
   ws.handler(msg -> ...);
   ws.accept();
   ws.write();
-};
+});
 
 // 5.0
 server.webSocketHandshakeHandler(handshake -> {
