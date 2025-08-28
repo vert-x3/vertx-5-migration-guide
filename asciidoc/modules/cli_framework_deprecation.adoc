@@ -25,7 +25,7 @@ Beware it is not guaranteed that backward compatibility can be maintained for th
 
 == Vert.x Application Launcher
 
-In {VertX} {v5}, a new module, the https://vertx.io/docs/vertx-application-launcher/java/[Vert.x Application Launcher] replaces the {VertX} {v4x} `io.vertx.core.Launcher` class.
+In {VertX} {v5}, a new module, the https://vertx.io/docs/vertx-launcher-application/java/[Vert.x Application Launcher] replaces the {VertX} {v4x} `io.vertx.core.Launcher` class.
 
 First, you must add it to your project's dependencies (Maven):
 
