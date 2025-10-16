@@ -111,10 +111,10 @@ connection.shutdown(5, TimeUnit.SECONDS); // 5 seconds
 [source,java]
 ----
 // 4.x
-response.push(httpMethod, authorityAsString path);
+response.push(httpMethod, authorityAsString, path);
 
 // 5.0
-response.push(httpMethod, HostAndPort.parse(authorityAsString) path);
+response.push(httpMethod, HostAndPort.parse(authorityAsString), path);
 ----
 
 === Removal of HTTP server request cookie map method
