@@ -304,7 +304,7 @@ HostAndPort authority = request.authority();
 === HttpServer request and WebSocket streams removal
 
 `HttpServer#requestStream()` and `HttpServer#timeoutStream()` have been removed. These streams were designed for Rx like
- languages and the actually don't provide any benefits.
+ languages and they actually don't provide any benefits.
 
 [source,java]
 ----
@@ -493,7 +493,7 @@ stream.deleteRecursive(path);
 
 === NetServer connect stream removals
 
-`NetServer#connectStream()` has been removed. This stream was designed for Rx like languages and the actually don't provide any benefits at the expense of the API.
+`NetServer#connectStream()` has been removed. This stream was designed for Rx like languages and they actually don't provide any benefits at the expense of the API.
 
 [source,java]
 ----
@@ -534,7 +534,7 @@ This impacts the use of Vert.x virtual threads and Kotlin coroutines.
 
 === TimeoutStream removal
 
-`TimeoutStream` has been removed. This stream was designed for Rx like languages and the actually don't provide any benefits at the expense of the API. Instead, the framework scheduler should be used instead along with a Vert.x context.
+`TimeoutStream` has been removed. This stream was designed for Rx like languages and they actually don't provide any benefits at the expense of the API. Instead, the framework scheduler should be used instead along with a Vert.x context.
 
 [source,java]
 ----
