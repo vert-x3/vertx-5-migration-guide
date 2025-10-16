@@ -1151,10 +1151,10 @@ connection.shutdown(<span class="integer">5</span>, <span class="predefined-type
 <div class="listingblock">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="java"><span class="comment">// 4.x</span>
-response.push(httpMethod, authorityAsString path);
+response.push(httpMethod, authorityAsString, path);
 
 <span class="comment">// 5.0</span>
-response.push(httpMethod, HostAndPort.parse(authorityAsString) path);</code></pre>
+response.push(httpMethod, HostAndPort.parse(authorityAsString), path);</code></pre>
 </div>
 </div>
 </div>
@@ -3041,7 +3041,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-16 04:01:06 UTC
+Last updated 2025-10-16 07:56:57 UTC
 </div>
 </div>
 </body>
