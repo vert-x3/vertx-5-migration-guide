@@ -1395,7 +1395,7 @@ HostAndPort authority = request.authority();</code></pre>
 <h4 id="_httpserver_request_and_websocket_streams_removal">HttpServer request and WebSocket streams removal</h4>
 <div class="paragraph">
 <p><code>HttpServer#requestStream()</code> and <code>HttpServer#timeoutStream()</code> have been removed. These streams were designed for Rx like
- languages and the actually don&#8217;t provide any benefits.</p>
+ languages and they actually don&#8217;t provide any benefits.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1637,7 +1637,7 @@ stream.deleteRecursive(path);</code></pre>
 <div class="sect3">
 <h4 id="_netserver_connect_stream_removals">NetServer connect stream removals</h4>
 <div class="paragraph">
-<p><code>NetServer#connectStream()</code> has been removed. This stream was designed for Rx like languages and the actually don&#8217;t provide any benefits at the expense of the API.</p>
+<p><code>NetServer#connectStream()</code> has been removed. This stream was designed for Rx like languages and they actually don&#8217;t provide any benefits at the expense of the API.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1687,7 +1687,7 @@ the virtual thread to catch an instance of <code>Throwable</code>.</p>
 <div class="sect3">
 <h4 id="_timeoutstream_removal">TimeoutStream removal</h4>
 <div class="paragraph">
-<p><code>TimeoutStream</code> has been removed. This stream was designed for Rx like languages and the actually don&#8217;t provide any benefits at the expense of the API. Instead, the framework scheduler should be used instead along with a Vert.x context.</p>
+<p><code>TimeoutStream</code> has been removed. This stream was designed for Rx like languages and they actually don&#8217;t provide any benefits at the expense of the API. Instead, the framework scheduler should be used instead along with a Vert.x context.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1753,7 +1753,7 @@ in <code>META/INF/services/io.vertx.core.spi.VertxServiceProvider</code> and opt
 <div class="sect3">
 <h4 id="_keycertoptions_key_manager_mapper_removal">keyCertOptions key manager mapper removal</h4>
 <div class="paragraph">
-<p><code>KeyCertOptions#keyManagerMapper()</code> method has been removed in Vert.x 5, implementors must instead implement <code>keyManagerFactoryMappermethod</code> that provides the opportunity to cache the <code>KeyManagerFactory</code> to the implementor that controls the lifecycle of the key manager.</p>
+<p><code>KeyCertOptions#keyManagerMapper()</code> method has been removed in Vert.x 5, implementors must instead implement <code>keyManagerFactoryMapper</code> method that provides the opportunity to cache the <code>KeyManagerFactory</code> to the implementor that controls the lifecycle of the key manager.</p>
 </div>
 </div>
 <div class="sect3">
@@ -3041,7 +3041,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-17 04:01:05 UTC
+Last updated 2025-10-17 09:05:41 UTC
 </div>
 </div>
 </body>
