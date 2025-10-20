@@ -601,6 +601,7 @@ table.CodeRay td.code{padding:0 0 0 .75em}
 <li><a href="#_connect_options">Connect options</a></li>
 <li><a href="#_pool_connect_handler">Pool connect handler</a></li>
 <li><a href="#_pool_connection_provider">Pool connection provider</a></li>
+<li><a href="#_scram_client_for_postgresql">SCRAM client for PostgreSQL</a></li>
 </ul>
 </li>
 <li><a href="#_vert_x_mongo_client">Vert.x Mongo Client</a>
@@ -2192,6 +2193,13 @@ builder.connectingTo(() -&gt; futureOfSqlConnectOptions());</code></pre>
 </div>
 </div>
 </div>
+<div class="sect2">
+<h3 id="_scram_client_for_postgresql">SCRAM client for PostgreSQL</h3>
+<div class="paragraph">
+<p>Remove <code>com.ongres.scram:client</code> from pom.xml or build.gradle. For details see
+<a href="https://vertx.io/docs/vertx-pg-client/java/#_sasl_scram_sha_256_authentication_mechanism">SASL SCRAM-SHA-256 authentication mechanism</a>.</p>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -3041,7 +3049,7 @@ Therefore, we cannot use them by default.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-10-20 04:04:03 UTC
+Last updated 2025-10-20 09:16:59 UTC
 </div>
 </div>
 </body>
