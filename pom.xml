@@ -21,7 +21,7 @@
   </parent>
 
   <artifactId>vertx-5-migration-guide</artifactId>
-  <version>1.0.0-SNASHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
 
   <name>Vert.x 5 Migration Guide</name>
 
